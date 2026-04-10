@@ -140,7 +140,7 @@ Connectors are the integration layer between Attesting and external systems. To 
 1. Create a new file at `src/services/connectors/adapters/your-adapter.ts`.
 2. Extend `BaseAdapter` from `src/services/connectors/base-adapter.ts`.
 3. Implement `fetch(since: string | null): Promise<any[]>` — fetches records from the external system.
-4. Implement `transform(record: any): { _table: string; external_id: string; ... }` — transforms an external record into a Attesting entity. The `_table` field tells the base class which table to upsert into.
+4. Implement `transform(record: any): { _table: string; external_id: string; ... }` — transforms an external record into an Attesting entity. The `_table` field tells the base class which table to upsert into.
 5. For bidirectional adapters, also implement `push(entity: any): Promise<any>`.
 6. Register your adapter in `src/services/connectors/registry.ts`.
 7. Write tests.
