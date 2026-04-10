@@ -6,7 +6,7 @@ import { AdapterRegistry } from '../../services/connectors/registry.js';
 const registry = new AdapterRegistry();
 
 /**
- * `crosswalk connector health [id]` — check adapter health.
+ * `attesting connector health [id]` — check adapter health.
  */
 export function registerConnectorHealth(connCommand: Command): void {
   connCommand

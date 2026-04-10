@@ -105,7 +105,7 @@ export async function exportSoaWorkbook(
   // Build workbook
   // -------------------------------------------------------------------------
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'Crosswalk';
+  wb.creator = 'Attesting';
   wb.created = new Date();
 
   _buildSoaSheet(wb, rows);

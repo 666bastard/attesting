@@ -18,7 +18,7 @@ Mass-assign owners, mass-update statuses, and bulk import/export across entities
 ## Implementation
 
 - **API:** `POST /api/bulk/:entityType` with `{ ids: [...], action: '...', params: {...} }`
-- **CLI:** `crosswalk bulk assign-owner --type risk --filter "status=open" --owner "Security Lead"`
+- **CLI:** `attesting bulk assign-owner --type risk --filter "status=open" --owner "Security Lead"`
 - **UI:** Checkbox column on all tables → bulk action toolbar appears
 - **Propagation:** Bulk operations call `propagate()` for each affected entity (batched in transaction)
 

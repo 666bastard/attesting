@@ -1,5 +1,5 @@
 /**
- * Represents an organization using Crosswalk.
+ * Represents an organization using Attesting.
  * Matches the `organizations` table in the database schema.
  */
 export interface Organization {

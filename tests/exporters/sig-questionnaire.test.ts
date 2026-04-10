@@ -1,7 +1,7 @@
 /**
  * Tests for the SIG Questionnaire exporter.
  *
- * Uses an in-memory SQLite database — never touches ~/.crosswalk/crosswalk.db.
+ * Uses an in-memory SQLite database — never touches ~/.attesting/attesting.db.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';

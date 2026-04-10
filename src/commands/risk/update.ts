@@ -9,7 +9,7 @@ import type { Risk } from '../../models/risk.js';
 const CLI_ACTOR: Actor = { type: 'user', id: 'cli' };
 
 /**
- * `crosswalk risk update` — edit severity, status, owner, or treatment.
+ * `attesting risk update` — edit severity, status, owner, or treatment.
  */
 export function registerRiskUpdate(riskCommand: Command): void {
   riskCommand

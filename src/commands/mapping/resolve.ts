@@ -4,7 +4,7 @@ import { log, error } from '../../utils/logger.js';
 import { resolveControl, type ResolvedMapping } from '../../mappers/resolver.js';
 
 /**
- * Registers the `crosswalk mapping resolve` subcommand.
+ * Registers the `attesting mapping resolve` subcommand.
  */
 export function registerMappingResolve(mappingCommand: Command): void {
   mappingCommand

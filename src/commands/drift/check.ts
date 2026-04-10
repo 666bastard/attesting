@@ -4,7 +4,7 @@ import { info, success, error } from '../../utils/logger.js';
 import { DriftScheduler } from '../../services/drift/scheduler.js';
 
 /**
- * `crosswalk drift check [name]` — run drift checks on demand.
+ * `attesting drift check [name]` — run drift checks on demand.
  */
 export function registerDriftCheck(driftCommand: Command): void {
   driftCommand

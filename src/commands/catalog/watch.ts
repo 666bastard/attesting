@@ -29,7 +29,7 @@ const KNOWN_SOURCES: Array<{ shortName: string; url: string; format: string }> =
 ];
 
 /**
- * Registers `crosswalk catalog watch` subcommands.
+ * Registers `attesting catalog watch` subcommands.
  */
 export function registerCatalogWatch(catalogCommand: Command): void {
   const watchCommand = catalogCommand
@@ -105,7 +105,7 @@ function runWatchList(): void {
     .all() as WatchRow[];
 
   if (rows.length === 0) {
-    warn('No watched sources. Run `crosswalk catalog watch seed` to add known NIST sources.');
+    warn('No watched sources. Run `attesting catalog watch seed` to add known NIST sources.');
     return;
   }
 
@@ -140,7 +140,7 @@ async function runWatchCheck(): Promise<void> {
     .all() as WatchRow[];
 
   if (rows.length === 0) {
-    warn('No watched sources. Run `crosswalk catalog watch seed` to add known sources.');
+    warn('No watched sources. Run `attesting catalog watch seed` to add known sources.');
     return;
   }
 
@@ -171,7 +171,7 @@ async function runWatchCheck(): Promise<void> {
         changedCount++;
         log(`CHANGED (old: ${row.last_hash.slice(0, 8)}… → new: ${hash.slice(0, 8)}…)`);
         warn(`  ⚡ ${row.catalog_short_name} has been updated upstream!`);
-        info(`     Re-import with: crosswalk catalog update --old ${row.catalog_short_name} --new-file <downloaded-file> --format ${row.source_format} …`);
+        info(`     Re-import with: attesting catalog update --old ${row.catalog_short_name} --new-file <downloaded-file> --format ${row.source_format} …`);
 
         database
           .prepare(
@@ -276,7 +276,7 @@ function fetchUrl(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
 
-    const request = client.get(url, { headers: { 'User-Agent': 'crosswalk-cli/0.1' } }, (res) => {
+    const request = client.get(url, { headers: { 'User-Agent': 'attesting-cli/0.1' } }, (res) => {
       // Follow redirects
       if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         fetchUrl(res.headers.location).then(resolve, reject);

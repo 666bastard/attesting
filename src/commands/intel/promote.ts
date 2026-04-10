@@ -4,7 +4,7 @@ import { success, error } from '../../utils/logger.js';
 import { promoteManualIntel } from '../../services/intel/manual-intel.js';
 
 /**
- * `crosswalk intel promote <id>` — promote provisional intel to confirmed threat.
+ * `attesting intel promote <id>` — promote provisional intel to confirmed threat.
  */
 export function registerIntelPromote(intelCommand: Command): void {
   intelCommand

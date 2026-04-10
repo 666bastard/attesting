@@ -5,7 +5,7 @@
 
 ## Scope
 
-Allow external systems to authenticate to Crosswalk's API via API keys. Enables headless integrations, CI/CD pipelines, and third-party tools.
+Allow external systems to authenticate to Attesting's API via API keys. Enables headless integrations, CI/CD pipelines, and third-party tools.
 
 ## Implementation
 
@@ -17,9 +17,9 @@ Allow external systems to authenticate to Crosswalk's API via API keys. Enables 
 
 ## CLI
 
-- `crosswalk api-key create --name "CI Pipeline" --role operator --expires 90d`
-- `crosswalk api-key list`
-- `crosswalk api-key revoke <id>`
+- `attesting api-key create --name "CI Pipeline" --role operator --expires 90d`
+- `attesting api-key list`
+- `attesting api-key revoke <id>`
 
 ## UI
 

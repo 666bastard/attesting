@@ -9,7 +9,7 @@ Overhaul README.md for public consumption. Add quickstart guide, architecture di
 ## README Sections
 
 1. **Hero** — one-line description, badges (license, build, npm)
-2. **What is Crosswalk** — 3-sentence explanation of the entity graph approach
+2. **What is Attesting** — 3-sentence explanation of the entity graph approach
 3. **Quickstart** — clone, install, init, import catalog, run first assessment (under 5 minutes)
 4. **Screenshots** — dashboard, risk matrix, drift alerts, mapping view
 5. **Architecture** — Mermaid diagram showing: CLI → Services → SQLite, Web UI → API → Services → SQLite, Propagation engine connecting all modules
@@ -28,6 +28,6 @@ Overhaul README.md for public consumption. Add quickstart guide, architecture di
 
 ## Exit Criteria
 
-- [ ] New user can follow quickstart and have Crosswalk running in under 5 minutes
+- [ ] New user can follow quickstart and have Attesting running in under 5 minutes
 - [ ] Architecture diagram renders in GitHub markdown
 - [ ] No dead links

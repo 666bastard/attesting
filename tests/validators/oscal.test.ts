@@ -3,7 +3,7 @@
  *
  * Tests that:
  * 1. The validator catches structural and business rule violations
- * 2. The Crosswalk SSP export passes all validation rules by default
+ * 2. The Attesting SSP export passes all validation rules by default
  * 3. Rule IDs match the Python oscal_validator.py reference (STRUCT-001 through SSP-033)
  */
 

@@ -78,7 +78,7 @@ export default function Dashboard({ scope }: DashboardProps) {
           <div className="glass-static rounded-2xl p-10 text-center">
             <Library className="h-8 w-8 mx-auto mb-3 text-indigo-400/30" aria-hidden="true" />
             <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>No catalogs imported yet</p>
-            <code className="text-[11px] mt-2 block font-mono" style={{ color: 'var(--text-dim)' }}>crosswalk catalog import --format oscal --file ...</code>
+            <code className="text-[11px] mt-2 block font-mono" style={{ color: 'var(--text-dim)' }}>attesting catalog import --format oscal --file ...</code>
           </div>
         )}
       </section>

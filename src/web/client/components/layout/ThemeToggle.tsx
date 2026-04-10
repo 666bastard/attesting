@@ -3,7 +3,7 @@ import { Sun, Moon, Monitor } from 'lucide-react';
 
 type Theme = 'light' | 'dark' | 'system';
 
-const STORAGE_KEY = 'crosswalk-theme';
+const STORAGE_KEY = 'attesting-theme';
 
 function getSystemPrefersDark(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches;

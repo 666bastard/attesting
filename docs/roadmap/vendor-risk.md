@@ -10,7 +10,7 @@ Track third-party vendor risk. Send assessments (SIG questionnaires), collect re
 
 1. **Vendor registry** — name, category, criticality tier, contract dates, primary contact
 2. **Assessment dispatch** — generate SIG questionnaire for vendor, send via email or portal link
-3. **Response collection** — vendor fills out questionnaire, responses imported back into Crosswalk
+3. **Response collection** — vendor fills out questionnaire, responses imported back into Attesting
 4. **Vendor scoring** — auto-score based on responses, flag high-risk answers
 5. **Ongoing monitoring** — link vendor to connectors for continuous posture checks
 6. **Risk linkage** — vendor risks linked to org risks via `risk_controls`

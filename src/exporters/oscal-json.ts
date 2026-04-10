@@ -1,7 +1,7 @@
 /**
  * OSCAL JSON Exporter
  *
- * Generates OSCAL 1.1.2 JSON documents from the Crosswalk database.
+ * Generates OSCAL 1.1.2 JSON documents from the Attesting database.
  * Supports two document types:
  *   - Component Definition (describes a product's control implementations)
  *   - System Security Plan (SSP) (simplified narrative plan)
@@ -300,7 +300,7 @@ function _requireOrg(db: Database.Database): OrgRow {
     .prepare('SELECT id, name, description FROM organizations LIMIT 1')
     .get() as OrgRow | undefined;
   if (!org) {
-    throw new Error('No organization found. Run `crosswalk org init` first.');
+    throw new Error('No organization found. Run `attesting org init` first.');
   }
   return org;
 }

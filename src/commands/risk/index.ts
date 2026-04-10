@@ -7,7 +7,7 @@ import { registerRiskExceptions } from './exceptions.js';
 import { registerRiskMatrix } from './matrix.js';
 
 /**
- * Registers the `crosswalk risk` command group with all subcommands.
+ * Registers the `attesting risk` command group with all subcommands.
  */
 export function registerRiskCommands(program: Command): void {
   const riskCommand = program

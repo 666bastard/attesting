@@ -6,7 +6,7 @@ import { success, error } from '../../utils/logger.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk impl add` subcommand.
+ * Registers the `attesting impl add` subcommand.
  */
 export function registerImplAdd(implCommand: Command): void {
   implCommand
@@ -41,7 +41,7 @@ function runImplAdd(options: ImplAddOptions): void {
     .get() as Pick<Organization, 'id' | 'name'> | undefined;
 
   if (!org) {
-    error('No organization found. Run `crosswalk org init --name <name>` first.');
+    error('No organization found. Run `attesting org init --name <name>` first.');
     process.exit(1);
   }
 
@@ -78,7 +78,7 @@ function runImplAdd(options: ImplAddOptions): void {
       .get(options.scope) as { id: string } | undefined;
 
     if (!scopeRow) {
-      error(`Scope not found: "${options.scope}". Use \`crosswalk scope create\` to create it.`);
+      error(`Scope not found: "${options.scope}". Use \`attesting scope create\` to create it.`);
       process.exit(1);
     }
     scopeId = scopeRow.id;

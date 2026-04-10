@@ -8,7 +8,7 @@ import { AdapterRegistry } from '../../services/connectors/registry.js';
 const registry = new AdapterRegistry();
 
 /**
- * `crosswalk connector add` — register a new connector.
+ * `attesting connector add` — register a new connector.
  */
 export function registerConnectorAdd(connCommand: Command): void {
   connCommand

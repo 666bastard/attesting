@@ -17,7 +17,7 @@ import {
 import type { Catalog } from '../../models/catalog.js';
 
 /**
- * Registers the `crosswalk catalog import` subcommand.
+ * Registers the `attesting catalog import` subcommand.
  */
 export function registerCatalogImport(catalogCommand: Command): void {
   catalogCommand

@@ -5,7 +5,7 @@ import { success, error, warn } from '../../utils/logger.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk impl edit` subcommand.
+ * Registers the `attesting impl edit` subcommand.
  */
 export function registerImplEdit(implCommand: Command): void {
   implCommand
@@ -34,7 +34,7 @@ function runImplEdit(ref: string, options: ImplEditOptions): void {
     .get() as Pick<Organization, 'id'> | undefined;
 
   if (!org) {
-    error('No organization found. Run `crosswalk org init --name <name>` first.');
+    error('No organization found. Run `attesting org init --name <name>` first.');
     process.exit(1);
   }
 

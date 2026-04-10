@@ -1,8 +1,8 @@
-# Crosswalk SaaS — Multi-Tenant Architecture Spec
+# Attesting SaaS — Multi-Tenant Architecture Spec
 
 ## Overview
 
-Transform Crosswalk from a local-first single-user CLI tool into a multi-tenant SaaS platform with per-seat pricing, role-based access control, and PostgreSQL backend. The open-source CLI remains free. The hosted web platform is the paid product.
+Transform Attesting from a local-first single-user CLI tool into a multi-tenant SaaS platform with per-seat pricing, role-based access control, and PostgreSQL backend. The open-source CLI remains free. The hosted web platform is the paid product.
 
 ---
 
@@ -80,7 +80,7 @@ CREATE TABLE invitations (
 -- ============================================================
 
 -- Better Auth creates its own user/session/account tables.
--- This table extends the user with Crosswalk-specific fields.
+-- This table extends the user with Attesting-specific fields.
 CREATE TABLE user_profiles (
     user_id UUID PRIMARY KEY,               -- matches Better Auth user.id
     display_name TEXT,
@@ -569,14 +569,14 @@ GOOGLE_CLIENT_SECRET=...
 MICROSOFT_CLIENT_ID=...
 MICROSOFT_CLIENT_SECRET=...
 EMAIL_API_KEY=...
-APP_URL=https://app.crosswalk.dev
+APP_URL=https://app.attesting.dev
 ```
 
 ### Domain Structure
-- `crosswalk.dev` — marketing site
-- `app.crosswalk.dev` — SaaS application
-- `docs.crosswalk.dev` — documentation
-- `api.crosswalk.dev` — API (if separated from app)
+- `attesting.dev` — marketing site
+- `app.attesting.dev` — SaaS application
+- `docs.attesting.dev` — documentation
+- `api.attesting.dev` — API (if separated from app)
 
 ---
 
@@ -619,8 +619,8 @@ APP_URL=https://app.crosswalk.dev
 - Build upgrade prompts in UI when limits are hit
 
 ### Phase 6: Polish + Launch (Week 6)
-- Marketing site at crosswalk.dev
-- Documentation at docs.crosswalk.dev
+- Marketing site at attesting.dev
+- Documentation at docs.attesting.dev
 - Onboarding flow for new tenants (guided setup: create org → import first framework → add first implementation)
 - Email notifications (invitation, plan changes, regulatory updates from catalog watch)
 - Production deployment with monitoring
@@ -629,7 +629,7 @@ APP_URL=https://app.crosswalk.dev
 
 ## What Stays Open Source
 
-The open-source CLI (`crosswalk` npm package) remains free and fully functional:
+The open-source CLI (`attesting` npm package) remains free and fully functional:
 - All importers and exporters
 - Mapping resolver and auto-link
 - Coverage calculator

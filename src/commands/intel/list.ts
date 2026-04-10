@@ -3,7 +3,7 @@ import { db } from '../../db/connection.js';
 import { info, warn } from '../../utils/logger.js';
 
 /**
- * `crosswalk intel list` — list threat_inputs with filters.
+ * `attesting intel list` — list threat_inputs with filters.
  */
 export function registerIntelList(intelCommand: Command): void {
   intelCommand

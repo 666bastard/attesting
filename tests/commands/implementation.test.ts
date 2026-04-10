@@ -1,7 +1,7 @@
 /**
  * Tests for implementation commands: add, import, list, edit, status.
  *
- * Uses an in-memory SQLite DB — never touches ~/.crosswalk/crosswalk.db.
+ * Uses an in-memory SQLite DB — never touches ~/.attesting/attesting.db.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';

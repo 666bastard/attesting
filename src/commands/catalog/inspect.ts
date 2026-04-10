@@ -8,7 +8,7 @@ const DEFAULT_LIMIT = 20;
 const DESCRIPTION_MAX_LENGTH = 80;
 
 /**
- * Registers the `crosswalk catalog inspect <short-name>` subcommand.
+ * Registers the `attesting catalog inspect <short-name>` subcommand.
  */
 export function registerCatalogInspect(catalogCommand: Command): void {
   catalogCommand
@@ -48,7 +48,7 @@ function runCatalogInspect(shortName: string, options: InspectOptions): void {
     .get(shortName) as Pick<Catalog, 'id' | 'name' | 'total_controls'> | undefined;
 
   if (!catalog) {
-    error(`Catalog not found: "${shortName}". Use \`crosswalk catalog list\` to see available catalogs.`);
+    error(`Catalog not found: "${shortName}". Use \`attesting catalog list\` to see available catalogs.`);
     process.exit(1);
   }
 

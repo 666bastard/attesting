@@ -6,10 +6,10 @@ import { success, error } from '../../utils/logger.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk assessment create` subcommand.
+ * Registers the `attesting assessment create` subcommand.
  *
  * Usage:
- *   crosswalk assessment create \
+ *   attesting assessment create \
  *     --name <name> \
  *     --catalog <short-name> \
  *     [--scope <scope_name>] \
@@ -48,7 +48,7 @@ function runAssessmentCreate(options: AssessmentCreateOptions): void {
     .get() as Pick<Organization, 'id' | 'name'> | undefined;
 
   if (!org) {
-    error('No organization found. Run `crosswalk org init --name <name>` first.');
+    error('No organization found. Run `attesting org init --name <name>` first.');
     process.exit(1);
   }
 

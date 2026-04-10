@@ -4,7 +4,7 @@ import { info, warn } from '../../utils/logger.js';
 import type { Risk } from '../../models/risk.js';
 
 /**
- * `crosswalk risk list` — list risk register with filters.
+ * `attesting risk list` — list risk register with filters.
  */
 export function registerRiskList(riskCommand: Command): void {
   riskCommand

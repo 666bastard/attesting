@@ -6,7 +6,7 @@ import { warn, success } from '../../utils/logger.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk org init` subcommand on the provided Command.
+ * Registers the `attesting org init` subcommand on the provided Command.
  */
 export function registerOrgInit(orgCommand: Command): void {
   orgCommand

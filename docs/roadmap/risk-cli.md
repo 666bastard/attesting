@@ -39,7 +39,7 @@
 
 ## Exit Criteria
 
-- [ ] `crosswalk risk --help` shows all 6 subcommands
-- [ ] `crosswalk risk list` returns results (or empty)
+- [ ] `attesting risk --help` shows all 6 subcommands
+- [ ] `attesting risk list` returns results (or empty)
 - [ ] Full workflow: create → link controls → update score → create exception → view matrix
 - [ ] `npm run build` passes

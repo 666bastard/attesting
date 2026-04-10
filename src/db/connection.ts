@@ -40,7 +40,7 @@ function splitSqlStatements(sql: string): string[] {
 
 /**
  * DatabaseManager handles the SQLite connection lifecycle.
- * The database file lives at ~/.crosswalk/crosswalk.db.
+ * The database file lives at ~/.attesting/attesting.db.
  * On first connect the schema is applied if the database is empty.
  */
 export class DatabaseManager {
@@ -48,8 +48,8 @@ export class DatabaseManager {
   private readonly dbPath: string;
 
   constructor() {
-    const dir = path.join(os.homedir(), '.crosswalk');
-    this.dbPath = path.join(dir, 'crosswalk.db');
+    const dir = path.join(os.homedir(), '.attesting');
+    this.dbPath = path.join(dir, 'attesting.db');
 
     // Ensure the directory exists
     if (!fs.existsSync(dir)) {

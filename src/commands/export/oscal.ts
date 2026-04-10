@@ -11,15 +11,15 @@ import {
 import { success, error, info, warn, log } from '../../utils/logger.js';
 
 /**
- * Registers the `crosswalk export oscal` subcommand.
+ * Registers the `attesting export oscal` subcommand.
  *
  * Usage:
- *   crosswalk export oscal --type component-definition|ssp
+ *   attesting export oscal --type component-definition|ssp
  *                          [--scope <scope_name>]
  *                          [--catalogs <comma-separated>]
  *                          --output <file.json>
  *
- *   crosswalk export oscal --validate --input <file.json> --type ssp [--strict]
+ *   attesting export oscal --validate --input <file.json> --type ssp [--strict]
  */
 export function registerExportOscal(exportCommand: Command): void {
   exportCommand

@@ -5,7 +5,7 @@ import { processDispositionInput, commitDisposition } from '../../services/dispo
 import readline from 'readline';
 
 /**
- * `crosswalk drift dispose <alert-id>` — submit a disposition via NLP pipeline.
+ * `attesting drift dispose <alert-id>` — submit a disposition via NLP pipeline.
  */
 export function registerDriftDispose(driftCommand: Command): void {
   driftCommand

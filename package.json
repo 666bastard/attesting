@@ -1,10 +1,10 @@
 {
-  "name": "crosswalk",
+  "name": "attesting",
   "version": "0.1.0",
   "description": "OSCAL-native compliance control platform. Map controls across frameworks, write implementations once, export to any format.",
   "main": "dist/index.js",
   "bin": {
-    "crosswalk": "dist/index.js"
+    "attesting": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arossi3/crosswalk"
+    "url": "https://github.com/xtonyknucklesx/attesting"
   },
   "engines": {
     "node": ">=20.0.0"

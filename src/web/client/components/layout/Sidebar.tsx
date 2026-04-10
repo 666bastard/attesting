@@ -140,7 +140,7 @@ export default function Sidebar() {
         <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-indigo-600 shadow-lg shadow-indigo-600/20">
           <Shield className="h-4 w-4 text-white" aria-hidden="true" />
         </div>
-        <span className="font-semibold text-[15px] tracking-tight" style={{ color: 'var(--text-primary)' }}>Crosswalk</span>
+        <span className="font-semibold text-[15px] tracking-tight" style={{ color: 'var(--text-primary)' }}>Attesting</span>
       </div>
 
       <nav className="flex-1 py-2">

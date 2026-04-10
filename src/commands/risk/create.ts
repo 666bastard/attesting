@@ -9,7 +9,7 @@ import type { Actor } from '../../services/audit/logger.js';
 const CLI_ACTOR: Actor = { type: 'user', id: 'cli' };
 
 /**
- * `crosswalk risk create` — create a new risk entry.
+ * `attesting risk create` — create a new risk entry.
  */
 export function registerRiskCreate(riskCommand: Command): void {
   riskCommand

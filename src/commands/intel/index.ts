@@ -6,7 +6,7 @@ import { registerIntelCorroborate } from './corroborate.js';
 import { registerIntelShadow } from './shadow.js';
 
 /**
- * Registers the `crosswalk intel` command group with all subcommands.
+ * Registers the `attesting intel` command group with all subcommands.
  */
 export function registerIntelCommands(program: Command): void {
   const intelCommand = program

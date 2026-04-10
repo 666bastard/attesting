@@ -1,4 +1,4 @@
-# Crosswalk Onboarding — Specification
+# Attesting Onboarding — Specification
 
 **Goal:** A new user goes from `npm install` to a working GRC posture in one guided session. The wizard adapts to org size — a solo practitioner skips what they don't need, an enterprise team gets the full setup.
 
@@ -8,12 +8,12 @@
 
 ### Stage 1 · Organization Setup
 **What:** Create the org profile — name, industry, size, primary contact.
-**Why:** Every entity in Crosswalk is scoped to an org. Nothing works without this.
+**Why:** Every entity in Attesting is scoped to an org. Nothing works without this.
 **Scaling:** Same for everyone. Takes 30 seconds.
 
-**CLI:** `crosswalk setup` launches the wizard. First prompt:
+**CLI:** `attesting setup` launches the wizard. First prompt:
 ```
-Welcome to Crosswalk.
+Welcome to Attesting.
 
 Let's set up your organization.
 
@@ -31,7 +31,7 @@ Let's set up your organization.
 ---
 
 ### Stage 2 · Select Compliance Frameworks
-**What:** Choose which catalogs to activate. Crosswalk bundles 14 — the wizard recommends based on industry and size.
+**What:** Choose which catalogs to activate. Attesting bundles 14 — the wizard recommends based on industry and size.
 **Why:** Frameworks define the controls the org will be assessed against. Everything downstream (implementations, assessments, risk mapping) depends on this choice.
 **Scaling:** Solo practitioner picks 1-2. Enterprise might activate 6+.
 
@@ -201,7 +201,7 @@ Let's establish your initial risk posture.
 
 **CLI:**
 ```
-Crosswalk can pull threat intelligence from external feeds automatically.
+Attesting can pull threat intelligence from external feeds automatically.
 
   Available connectors:
     [✓] CISA KEV (free, no API key needed) — recommended for everyone
@@ -229,7 +229,7 @@ Crosswalk can pull threat intelligence from external feeds automatically.
 **CLI:**
 ```
   ┌──────────────────────────────────────────────┐
-  │  Crosswalk Setup Complete                    │
+  │  Attesting Setup Complete                    │
   ├──────────────────────────────────────────────┤
   │  Organization:  Acme Corp                    │
   │  Catalogs:      3 active (293 controls)      │
@@ -242,12 +242,12 @@ Crosswalk can pull threat intelligence from external feeds automatically.
   └──────────────────────────────────────────────┘
 
   What's next:
-    • Run `crosswalk web serve` to open the dashboard
-    • Run `crosswalk assessment create` to start your first assessment
-    • Run `crosswalk implementation add` to document control implementations
-    • Run `crosswalk drift check` to run your first posture check
+    • Run `attesting web serve` to open the dashboard
+    • Run `attesting assessment create` to start your first assessment
+    • Run `attesting implementation add` to document control implementations
+    • Run `attesting drift check` to run your first posture check
 
-  Full documentation: https://crosswalk.dev/docs
+  Full documentation: https://attesting.dev/docs
 ```
 
 **Web UI:** Summary dashboard with the same stats. "Start Assessment" and "Add Implementation" CTAs. Guided tour overlay highlighting key navigation items.
@@ -278,7 +278,7 @@ Crosswalk can pull threat intelligence from external feeds automatically.
 
 ### Files to Modify
 
-- `src/index.ts` — register `crosswalk setup` command
+- `src/index.ts` — register `attesting setup` command
 - `src/web/client/App.tsx` — redirect to wizard when no org exists
 - `src/web/server.ts` — mount `/api/onboarding` routes
 
@@ -288,9 +288,9 @@ Crosswalk can pull threat intelligence from external feeds automatically.
 
 ### Key Design Decisions
 
-- **Resumable:** Wizard state persists in DB. If user exits mid-setup, `crosswalk setup` resumes from last completed stage.
+- **Resumable:** Wizard state persists in DB. If user exits mid-setup, `attesting setup` resumes from last completed stage.
 - **Skippable:** Every stage after Stage 1 (org) can be skipped. The wizard tracks what was skipped and can remind later.
-- **Re-runnable:** `crosswalk setup` can be run again to add more catalogs, scopes, assets. It detects existing config and offers to extend rather than overwrite.
+- **Re-runnable:** `attesting setup` can be run again to add more catalogs, scopes, assets. It detects existing config and offers to extend rather than overwrite.
 - **Web-first detection:** When the web server starts and no org exists, redirect all routes to the setup wizard. After setup, redirect to dashboard.
 - **No lock-in:** Everything the wizard does can also be done via individual CLI commands or API calls. The wizard is sugar, not a gate.
 
@@ -298,10 +298,10 @@ Crosswalk can pull threat intelligence from external feeds automatically.
 
 ## Exit Criteria
 
-- [ ] `crosswalk setup` walks through all 8 stages interactively
+- [ ] `attesting setup` walks through all 8 stages interactively
 - [ ] Web UI redirects to wizard on first launch
 - [ ] Solo practitioner completes setup in under 5 minutes
 - [ ] Enterprise user can import CSV assets and risk register during setup
 - [ ] Wizard is resumable after exit
-- [ ] `crosswalk setup --status` shows which stages are completed
+- [ ] `attesting setup --status` shows which stages are completed
 - [ ] CISA KEV connector auto-syncs during setup and shows correlations

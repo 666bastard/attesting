@@ -64,7 +64,7 @@ export default function SetupWizard({ onComplete }: { onComplete: () => void }) 
       <div className="w-64 p-6 border-r" style={{ borderColor: 'var(--border-glass)', background: 'var(--bg-glass)' }}>
         <div className="flex items-center gap-2 mb-8">
           <Rocket className="h-5 w-5 text-indigo-400" />
-          <h1 className="text-[16px] font-bold" style={{ color: 'var(--text-primary)' }}>Crosswalk Setup</h1>
+          <h1 className="text-[16px] font-bold" style={{ color: 'var(--text-primary)' }}>Attesting Setup</h1>
         </div>
         <div className="space-y-1">
           {STAGES.map(s => {
@@ -336,7 +336,7 @@ function ReviewStep({ state, onComplete }: { state: WizardState; onComplete: () 
         </div>
       </div>
       <div className="mt-6">
-        <NextButton onClick={onComplete} label="Launch Crosswalk" />
+        <NextButton onClick={onComplete} label="Launch Attesting" />
       </div>
     </div>
   );

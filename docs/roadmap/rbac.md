@@ -20,7 +20,7 @@ Add roles, permissions, and route guards. Users can only access/modify data thei
 
 - **Migration:** `roles` table (id, name, permissions JSON), `user_roles` junction
 - **Middleware:** `requireRole(...roles)` Express middleware on every route
-- **CLI:** `crosswalk user create`, `crosswalk user assign-role`
+- **CLI:** `attesting user create`, `attesting user assign-role`
 - **UI:** Role badge in header, disabled controls for unauthorized actions
 - **Audit:** All permission checks logged
 

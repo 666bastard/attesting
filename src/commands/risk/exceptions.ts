@@ -6,7 +6,7 @@ import { success, error, info, warn } from '../../utils/logger.js';
 import type { Risk, RiskException } from '../../models/risk.js';
 
 /**
- * `crosswalk risk exceptions` — list, create, or expire risk exceptions.
+ * `attesting risk exceptions` — list, create, or expire risk exceptions.
  */
 export function registerRiskExceptions(riskCommand: Command): void {
   riskCommand

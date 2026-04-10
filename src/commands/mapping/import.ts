@@ -8,7 +8,7 @@ import { parseCsv } from '../../importers/csv-generic.js';
 import * as fs from 'fs';
 
 /**
- * Registers the `crosswalk mapping import` subcommand.
+ * Registers the `attesting mapping import` subcommand.
  */
 export function registerMappingImport(mappingCommand: Command): void {
   mappingCommand

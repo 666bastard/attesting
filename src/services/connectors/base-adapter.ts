@@ -24,10 +24,10 @@ export abstract class BaseAdapter {
   /** Fetch records from the external system. */
   abstract fetch(since: string | null): Promise<any[]>;
 
-  /** Transform an external record into a Crosswalk entity shape. */
+  /** Transform an external record into a Attesting entity shape. */
   abstract transform(record: any): { _table: string; external_id: string; [k: string]: any } | null;
 
-  /** Push a Crosswalk entity to the external system (bidirectional only). */
+  /** Push a Attesting entity to the external system (bidirectional only). */
   async push(_entity: any): Promise<any> {
     throw new Error('push() not implemented — this may be an inbound-only adapter');
   }

@@ -13,14 +13,14 @@ User authentication with local credentials and optional SSO/SAML for enterprise 
 - Password hashing with bcrypt (cost factor 12)
 - Session management via signed HTTP-only cookies (express-session + better-sqlite3 session store)
 - `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
-- CLI: `crosswalk user create --email <email> --role <role>`
+- CLI: `attesting user create --email <email> --role <role>`
 
 ## SSO/SAML (Phase 2)
 
 - SAML 2.0 via `passport-saml`
 - Configuration: IdP metadata URL, entity ID, callback URL stored in org settings
 - Just-in-time user provisioning on first SSO login
-- Role mapping from SAML attributes to Crosswalk roles
+- Role mapping from SAML attributes to Attesting roles
 
 ## Session Security
 

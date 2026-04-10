@@ -3,7 +3,7 @@ import { db } from '../../db/connection.js';
 import { info, warn } from '../../utils/logger.js';
 
 /**
- * `crosswalk connector log [id]` — show sync history.
+ * `attesting connector log [id]` — show sync history.
  */
 export function registerConnectorLog(connCommand: Command): void {
   connCommand

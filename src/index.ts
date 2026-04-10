@@ -46,7 +46,7 @@ import { registerConnectorCommands } from './commands/connector/index.js';
 const program = new Command();
 
 program
-  .name('crosswalk')
+  .name('attesting')
   .description('OSCAL-native compliance control platform')
   .version('0.1.0');
 
@@ -60,7 +60,7 @@ const orgCommand = program
 registerOrgInit(orgCommand);
 
 // ---------------------------------------------------------------
-// scope commands (top-level: crosswalk scope <sub>)
+// scope commands (top-level: attesting scope <sub>)
 // ---------------------------------------------------------------
 registerScopeCommands(program);
 

@@ -9,9 +9,9 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Crosswalk, **do not open a public issue.**
+If you discover a security vulnerability in Attesting, **do not open a public issue.**
 
-Instead, please email **security@crosswalk.dev** (or contact the maintainer directly via GitHub) with:
+Instead, please email **security@attesting.dev** (or contact the maintainer directly via GitHub) with:
 
 1. A description of the vulnerability
 2. Steps to reproduce
@@ -40,7 +40,7 @@ The following are in scope for security reports:
 
 ## Security Measures
 
-Crosswalk includes:
+Attesting includes:
 
 - Parameterized SQL queries throughout (no string concatenation)
 - File upload scanning with magic byte validation, extension whitelist, and script detection

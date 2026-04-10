@@ -9,7 +9,7 @@ const registry = new AdapterRegistry();
 const CLI_ACTOR: Actor = { type: 'user', id: 'cli' };
 
 /**
- * `crosswalk connector sync [id]` — trigger sync.
+ * `attesting connector sync [id]` — trigger sync.
  */
 export function registerConnectorSync(connCommand: Command): void {
   connCommand

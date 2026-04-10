@@ -29,7 +29,7 @@ Configurable notifications via email, Slack, and webhooks. Triggered by propagat
 - **Migration:** `notification_channels` table, `notification_rules` table (trigger, channel_id, filters)
 - **Service:** `src/services/notifications/dispatcher.ts` — called by propagation engine after handlers run
 - **Templates:** Markdown templates per trigger type, rendered to HTML for email
-- **CLI:** `crosswalk notify test --channel <id>` to send test notification
+- **CLI:** `attesting notify test --channel <id>` to send test notification
 - **UI:** Settings page for channel config + rule builder
 
 ## Exit Criteria

@@ -146,7 +146,7 @@ function SummaryView({ summary, onResolve }: { summary: any; onResolve: (cat: st
         <div className="text-center">
           <GitCompareArrows className="h-8 w-8 mx-auto mb-2 text-gray-300" aria-hidden="true" />
           <p>No mappings yet</p>
-          <p className="text-xs mt-1">Run <code className="bg-gray-100 px-1 rounded">crosswalk mapping auto-link</code> to generate cross-framework mappings</p>
+          <p className="text-xs mt-1">Run <code className="bg-gray-100 px-1 rounded">attesting mapping auto-link</code> to generate cross-framework mappings</p>
         </div>
       </div>
     );

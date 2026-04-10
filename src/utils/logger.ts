@@ -62,7 +62,7 @@ export function success(message: string, ...args: unknown[]): void {
 
 /** Dimmed output for verbose/debug detail. */
 export function debug(message: string, ...args: unknown[]): void {
-  if (process.env['CROSSWALK_DEBUG']) {
+  if (process.env['ATTESTING_DEBUG']) {
     const prefix = colorize(DIM, '[debug]');
     console.log(`${prefix} ${colorize(DIM, message)}`, ...args);
   }

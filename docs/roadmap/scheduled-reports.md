@@ -12,7 +12,7 @@ Automatically generate and deliver reports on a schedule. Weekly compliance summ
 - **Migration:** `scheduled_reports` table (id, report_type, catalog_id, format, schedule_cron, recipients, last_run, next_run)
 - **Service:** `src/services/reports/scheduler.ts` — runs as part of drift scheduler loop
 - **Delivery:** Generate report → attach to email via notification engine, or save to configured path
-- **CLI:** `crosswalk report schedule --type compliance-summary --catalog nist-800-53 --cron "0 8 * * 1" --email admin@co.com`
+- **CLI:** `attesting report schedule --type compliance-summary --catalog nist-800-53 --cron "0 8 * * 1" --email admin@co.com`
 
 ## Report Types
 

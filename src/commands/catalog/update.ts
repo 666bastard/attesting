@@ -11,7 +11,7 @@ import { importSigCatalog } from '../../importers/sig-content-library.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk catalog update` subcommand.
+ * Registers the `attesting catalog update` subcommand.
  */
 export function registerCatalogUpdate(catalogCommand: Command): void {
   catalogCommand
@@ -153,7 +153,7 @@ async function runCatalogUpdate(options: CatalogUpdateOptions): Promise<void> {
 
   if (migrationResult.copiedNeedsReview > 0) {
     warn(`${migrationResult.copiedNeedsReview} implementations need manual review.`);
-    log('  Run: crosswalk impl list --catalog ' + options.newShortName + ' --status needs-review');
+    log('  Run: attesting impl list --catalog ' + options.newShortName + ' --status needs-review');
   }
   if (diff.summary.added > 0) {
     warn(`${diff.summary.added} new controls have no implementation.`);

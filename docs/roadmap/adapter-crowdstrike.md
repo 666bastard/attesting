@@ -41,4 +41,4 @@ Pull IOCs, vulnerability data, and detections from CrowdStrike Falcon API. Trans
 - [ ] Adapter class extends BaseAdapter with `fetch()` and `transform()`
 - [ ] Registered in AdapterRegistry
 - [ ] Tests cover transform mapping and error handling
-- [ ] CLI: `crosswalk connector add --type crowdstrike --config '{...}'` works
+- [ ] CLI: `attesting connector add --type crowdstrike --config '{...}'` works

@@ -5,10 +5,10 @@ import { success, error } from '../../utils/logger.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk export sig` subcommand.
+ * Registers the `attesting export sig` subcommand.
  *
  * Usage:
- *   crosswalk export sig --catalog <short-name> [--scope <scope>]
+ *   attesting export sig --catalog <short-name> [--scope <scope>]
  *                        [--format response-sig|questionnaire]
  *                        --output <file.xlsx>
  */

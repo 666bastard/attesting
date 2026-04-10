@@ -9,7 +9,7 @@ import { parseCsv } from '../../importers/csv-generic.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk impl import` subcommand.
+ * Registers the `attesting impl import` subcommand.
  */
 export function registerImplImport(implCommand: Command): void {
   implCommand
@@ -43,7 +43,7 @@ function runImplImport(options: ImplImportOptions): void {
     .get() as Pick<Organization, 'id' | 'name'> | undefined;
 
   if (!org) {
-    error('No organization found. Run `crosswalk org init --name <name>` first.');
+    error('No organization found. Run `attesting org init --name <name>` first.');
     process.exit(1);
   }
 
@@ -53,7 +53,7 @@ function runImplImport(options: ImplImportOptions): void {
     .get(options.scope) as { id: string } | undefined;
 
   if (!scopeRow) {
-    error(`Scope not found: "${options.scope}". Use \`crosswalk scope create\` to create it.`);
+    error(`Scope not found: "${options.scope}". Use \`attesting scope create\` to create it.`);
     process.exit(1);
   }
 

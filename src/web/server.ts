@@ -113,7 +113,7 @@ export function startServer(options: ServerOptions): void {
 
   app.listen(options.port, () => {
     const mode = options.dev ? 'dev' : 'production';
-    console.log(`\x1b[32m✔\x1b[0m Crosswalk server running at http://localhost:${options.port} (${mode})`);
+    console.log(`\x1b[32m✔\x1b[0m Attesting server running at http://localhost:${options.port} (${mode})`);
     if (options.dev) {
       console.log(`  API: http://localhost:${options.port}/api`);
       console.log(`  UI:  Start Vite dev server separately — npx vite --config vite.web.config.ts`);

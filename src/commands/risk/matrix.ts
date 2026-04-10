@@ -4,7 +4,7 @@ import { generateUuid } from '../../utils/uuid.js';
 import { success, info, warn } from '../../utils/logger.js';
 
 /**
- * `crosswalk risk matrix` — display or configure the risk matrix.
+ * `attesting risk matrix` — display or configure the risk matrix.
  */
 export function registerRiskMatrix(riskCommand: Command): void {
   riskCommand

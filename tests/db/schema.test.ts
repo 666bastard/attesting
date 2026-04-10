@@ -6,7 +6,7 @@ import Database from 'better-sqlite3';
 
 /**
  * Opens a fresh in-memory (or temp-file) database and applies the schema.
- * This tests the schema in isolation without touching ~/.crosswalk/crosswalk.db.
+ * This tests the schema in isolation without touching ~/.attesting/attesting.db.
  */
 function openTestDb(): Database.Database {
   const schemaPath = path.join(__dirname, '../../src/db/schema.sql');

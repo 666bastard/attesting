@@ -6,7 +6,7 @@ import { calculateCoverage } from '../../mappers/coverage.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk catalog impact` subcommand.
+ * Registers the `attesting catalog impact` subcommand.
  */
 export function registerCatalogImpact(catalogCommand: Command): void {
   catalogCommand
@@ -52,7 +52,7 @@ function runCatalogImpact(options: CatalogImpactOptions): void {
     .get() as Pick<Organization, 'id' | 'name'> | undefined;
 
   if (!org) {
-    error('No organization found. Run `crosswalk org init --name <name>` first.');
+    error('No organization found. Run `attesting org init --name <name>` first.');
     process.exit(1);
   }
 

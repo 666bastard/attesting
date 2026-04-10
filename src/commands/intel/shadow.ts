@@ -5,7 +5,7 @@ import { generateShadowImpact } from '../../services/intel/shadow-analysis.js';
 import type { ShadowReport } from '../../services/intel/shadow-analysis.js';
 
 /**
- * `crosswalk intel shadow <id>` — display shadow impact analysis.
+ * `attesting intel shadow <id>` — display shadow impact analysis.
  */
 export function registerIntelShadow(intelCommand: Command): void {
   intelCommand

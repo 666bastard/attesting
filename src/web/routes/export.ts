@@ -30,7 +30,7 @@ export function exportRoutes(): Router {
     // Sanitize filename — no path traversal
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const safeScope = (scope || 'all').replace(/[^a-zA-Z0-9_-]/g, '_');
-    const exportDir = path.join(os.homedir(), '.crosswalk', 'exports');
+    const exportDir = path.join(os.homedir(), '.attesting', 'exports');
     if (!fs.existsSync(exportDir)) fs.mkdirSync(exportDir, { recursive: true });
 
     try {
@@ -39,12 +39,12 @@ export function exportRoutes(): Router {
 
       switch (format) {
         case 'csv': {
-          outputPath = path.join(exportDir, `crosswalk-${safeScope}-${timestamp}.csv`);
+          outputPath = path.join(exportDir, `attesting-${safeScope}-${timestamp}.csv`);
           result = exportCsvFlat(scope || undefined, true, outputPath, database);
           break;
         }
         case 'oscal': {
-          outputPath = path.join(exportDir, `crosswalk-${safeScope}-${timestamp}.json`);
+          outputPath = path.join(exportDir, `attesting-${safeScope}-${timestamp}.json`);
           result = exportOscalComponentDefinition(
             scope || 'Default',
             catalog ? [catalog] : [],
@@ -54,7 +54,7 @@ export function exportRoutes(): Router {
           break;
         }
         case 'sig': {
-          outputPath = path.join(exportDir, `crosswalk-sig-${safeScope}-${timestamp}.xlsx`);
+          outputPath = path.join(exportDir, `attesting-sig-${safeScope}-${timestamp}.xlsx`);
           result = await exportSigQuestionnaire({
             catalogShortName: catalog || 'sig-lite-2026',
             scopeName: scope || undefined,
@@ -64,7 +64,7 @@ export function exportRoutes(): Router {
           break;
         }
         case 'soa': {
-          outputPath = path.join(exportDir, `crosswalk-soa-${safeScope}-${timestamp}.xlsx`);
+          outputPath = path.join(exportDir, `attesting-soa-${safeScope}-${timestamp}.xlsx`);
           result = await exportSoaWorkbook(scope || undefined, outputPath, database);
           break;
         }
@@ -88,7 +88,7 @@ export function exportRoutes(): Router {
   // GET /api/export/download/:filename — download an exported file
   router.get('/download/:filename', (req, res) => {
     const filename = path.basename(req.params.filename); // sanitize
-    const exportDir = path.join(os.homedir(), '.crosswalk', 'exports');
+    const exportDir = path.join(os.homedir(), '.attesting', 'exports');
     const filePath = path.join(exportDir, filename);
 
     if (!fs.existsSync(filePath)) {

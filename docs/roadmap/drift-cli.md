@@ -33,6 +33,6 @@
 
 ## Exit Criteria
 
-- [ ] `crosswalk drift --help` shows all 5 subcommands
+- [ ] `attesting drift --help` shows all 5 subcommands
 - [ ] `drift check` runs all 6 checks and reports per-check counts
 - [ ] `drift dispose` accepts natural language and shows classification result + generated tasks

@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Crosswalk API
+  title: Attesting API
   description: OSCAL-native GRC platform — governance, risk, compliance, threat intelligence, and drift detection.
   version: 0.3.0
   license:

@@ -5,7 +5,7 @@ import { calculateCoverage } from '../../mappers/coverage.js';
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk impl status` subcommand.
+ * Registers the `attesting impl status` subcommand.
  */
 export function registerImplStatus(implCommand: Command): void {
   implCommand
@@ -30,7 +30,7 @@ function runImplStatus(options: ImplStatusOptions): void {
     .get() as Pick<Organization, 'id' | 'name'> | undefined;
 
   if (!org) {
-    warn('No organization found. Run `crosswalk org init --name <name>` first.');
+    warn('No organization found. Run `attesting org init --name <name>` first.');
     return;
   }
 

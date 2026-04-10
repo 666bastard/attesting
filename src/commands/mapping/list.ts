@@ -3,7 +3,7 @@ import { db } from '../../db/connection.js';
 import { log, warn } from '../../utils/logger.js';
 
 /**
- * Registers the `crosswalk mapping list` subcommand.
+ * Registers the `attesting mapping list` subcommand.
  */
 export function registerMappingList(mappingCommand: Command): void {
   mappingCommand

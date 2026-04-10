@@ -1,16 +1,16 @@
 version: "3.8"
 
 services:
-  crosswalk:
+  attesting:
     build: .
     ports:
       - "3000:3000"
     volumes:
-      - crosswalk-data:/root/.crosswalk
+      - attesting-data:/root/.attesting
     environment:
       - NODE_ENV=production
-      - CROSSWALK_PORT=3000
+      - ATTESTING_PORT=3000
     restart: unless-stopped
 
 volumes:
-  crosswalk-data:
+  attesting-data:

@@ -4,10 +4,10 @@ import { exportPdfReport } from '../../exporters/pdf-report.js';
 import { success, error } from '../../utils/logger.js';
 
 /**
- * Registers the `crosswalk export pdf` subcommand.
+ * Registers the `attesting export pdf` subcommand.
  *
  * Usage:
- *   crosswalk export pdf [--scope <scope_name>]
+ *   attesting export pdf [--scope <scope_name>]
  *                        [--catalogs <comma-separated>]
  *                        --output <file.pdf>
  */

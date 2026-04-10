@@ -24,10 +24,10 @@ import { success, error, log } from '../../utils/logger.js';
 // ---------------------------------------------------------------------------
 
 /**
- * Registers the `crosswalk assessment poam` subcommand.
+ * Registers the `attesting assessment poam` subcommand.
  *
  * Usage:
- *   crosswalk assessment poam --assessment <name-or-id> [--output <file.xlsx>]
+ *   attesting assessment poam --assessment <name-or-id> [--output <file.xlsx>]
  */
 export function registerAssessmentPoam(assessmentCommand: Command): void {
   assessmentCommand
@@ -231,7 +231,7 @@ async function _exportPoamWorkbook(
   database: Database.Database
 ): Promise<void> {
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'Crosswalk';
+  wb.creator = 'Attesting';
   wb.created = new Date();
 
   const sheet = wb.addWorksheet('POA&M');

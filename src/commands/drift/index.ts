@@ -6,7 +6,7 @@ import { registerDriftTasks } from './tasks.js';
 import { registerDriftSchedule } from './schedule.js';
 
 /**
- * Registers the `crosswalk drift` command group with all subcommands.
+ * Registers the `attesting drift` command group with all subcommands.
  */
 export function registerDriftCommands(program: Command): void {
   const driftCommand = program

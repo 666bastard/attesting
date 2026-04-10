@@ -37,6 +37,6 @@
 
 ## Exit Criteria
 
-- [ ] `crosswalk intel --help` shows all 5 subcommands
+- [ ] `attesting intel --help` shows all 5 subcommands
 - [ ] Full workflow: submit provisional → view shadow → corroborate → promote
 - [ ] Shadow output shows affected risks, controls, and assets

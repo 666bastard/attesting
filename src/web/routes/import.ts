@@ -8,7 +8,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 
-const uploadDir = path.join(os.homedir(), '.crosswalk', 'uploads');
+const uploadDir = path.join(os.homedir(), '.attesting', 'uploads');
 
 function ensureUploadDir(): void {
   if (!fs.existsSync(uploadDir)) {

@@ -1,5 +1,5 @@
 -- ============================================================
--- CROSSWALK MIGRATION 002: GRC EXTENSIONS
+-- ATTESTING MIGRATION 002: GRC EXTENSIONS
 -- Extends existing governance/risk tables with new columns,
 -- adds threat intel, assets, drift, disposition, connector,
 -- and audit tables. Does NOT recreate existing tables.

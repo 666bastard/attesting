@@ -4,7 +4,7 @@ import { info, success, warn } from '../../utils/logger.js';
 import { checkAutoCorroboration } from '../../services/intel/auto-corroboration.js';
 
 /**
- * `crosswalk intel corroborate` — run auto-corroboration on demand.
+ * `attesting intel corroborate` — run auto-corroboration on demand.
  * Checks all recent threat inputs against provisional manual intel.
  */
 export function registerIntelCorroborate(intelCommand: Command): void {

@@ -21,7 +21,7 @@ Default weights: coverage=0.5, evidence=0.3, assessment=0.2. Configurable per or
 - **Service:** `src/services/scoring/compliance-score.ts` — stateless, receives db + catalog_id + scope_id
 - **Migration:** `compliance_scores` table (id, catalog_id, scope_id, score, breakdown_json, calculated_at)
 - **API:** `GET /api/coverage/:catalogId/score`, `GET /api/coverage/scores` (all catalogs)
-- **CLI:** `crosswalk assessment score --catalog <name> [--scope <name>]`
+- **CLI:** `attesting assessment score --catalog <name> [--scope <name>]`
 - **Drift check:** Add score recalculation to the 24hr full posture check
 
 ## Breakdown

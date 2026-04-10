@@ -5,7 +5,7 @@ import { success, error, info, warn } from '../../utils/logger.js';
 import type { Risk } from '../../models/risk.js';
 
 /**
- * `crosswalk risk link` — link risk ↔ controls or risk ↔ assets.
+ * `attesting risk link` — link risk ↔ controls or risk ↔ assets.
  */
 export function registerRiskLink(riskCommand: Command): void {
   riskCommand

@@ -4,10 +4,10 @@ import { exportCsvFlat } from '../../exporters/csv-flat.js';
 import { success, error } from '../../utils/logger.js';
 
 /**
- * Registers the `crosswalk export csv` subcommand.
+ * Registers the `attesting export csv` subcommand.
  *
  * Usage:
- *   crosswalk export csv [--scope <scope_name>] [--include-mappings]
+ *   attesting export csv [--scope <scope_name>] [--include-mappings]
  *                        --output <file.csv>
  */
 export function registerExportCsv(exportCommand: Command): void {

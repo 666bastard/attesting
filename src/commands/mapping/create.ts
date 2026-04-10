@@ -39,7 +39,7 @@ function lookupControlUuid(
 }
 
 /**
- * Registers the `crosswalk mapping create` subcommand.
+ * Registers the `attesting mapping create` subcommand.
  */
 export function registerMappingCreate(mappingCommand: Command): void {
   mappingCommand

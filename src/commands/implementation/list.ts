@@ -3,7 +3,7 @@ import { db } from '../../db/connection.js';
 import { log, warn } from '../../utils/logger.js';
 
 /**
- * Registers the `crosswalk impl list` subcommand.
+ * Registers the `attesting impl list` subcommand.
  */
 export function registerImplList(implCommand: Command): void {
   implCommand

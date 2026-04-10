@@ -30,7 +30,7 @@ Generate professional PDF and DOCX reports suitable for auditors, regulators, an
 
 ## CLI
 
-- `crosswalk export report --type ssp --catalog nist-800-53 --format pdf --output ./reports/`
+- `attesting export report --type ssp --catalog nist-800-53 --format pdf --output ./reports/`
 
 ## Exit Criteria
 

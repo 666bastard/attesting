@@ -1,7 +1,7 @@
 /**
  * Tests for assessment commands: create, evaluate, poam.
  *
- * Uses an in-memory SQLite database — never touches ~/.crosswalk/crosswalk.db.
+ * Uses an in-memory SQLite database — never touches ~/.attesting/attesting.db.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';

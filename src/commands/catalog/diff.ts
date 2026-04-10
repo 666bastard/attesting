@@ -7,7 +7,7 @@ import { diffCatalogs, type DiffResult, type ControlChange } from '../../mappers
 import type { Organization } from '../../models/organization.js';
 
 /**
- * Registers the `crosswalk catalog diff` subcommand.
+ * Registers the `attesting catalog diff` subcommand.
  */
 export function registerCatalogDiff(catalogCommand: Command): void {
   catalogCommand

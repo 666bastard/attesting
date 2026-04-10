@@ -12,7 +12,7 @@ import {
 } from '../../importers/oscal-catalog.js';
 
 /**
- * Registers the `crosswalk catalog refresh` subcommand.
+ * Registers the `attesting catalog refresh` subcommand.
  *
  * Re-reads OSCAL source files and updates control descriptions to resolve
  * parameter placeholders ({{ insert: param, ... }}) that were stored as

@@ -20,7 +20,7 @@ Guided wizard that identifies compliance gaps for a target framework. Shows what
 
 - **Service:** `src/services/analysis/gap-analysis.ts`
 - **API:** `POST /api/analysis/gap` (accepts catalog_id, scope_id, returns gap report)
-- **CLI:** `crosswalk analysis gap --catalog cmmc-2.0 --scope production`
+- **CLI:** `attesting analysis gap --catalog cmmc-2.0 --scope production`
 - **UI:** Step-by-step wizard component with progress bar
 
 ## Key Details

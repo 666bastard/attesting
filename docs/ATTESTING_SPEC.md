@@ -1,8 +1,8 @@
-# CROSSWALK — OSCAL-Native Compliance Control Platform
+# ATTESTING — OSCAL-Native Compliance Control Platform
 
 ## Project Overview
 
-Build a local-first CLI + web application called **Crosswalk** that replaces spreadsheet-based compliance workflows (SIG Manager, manual SOA crosswalks, Excel-based gap assessments) with an OSCAL-native data model. The tool lets any organization:
+Build a local-first CLI + web application called **Attesting** that replaces spreadsheet-based compliance workflows (SIG Manager, manual SOA attestings, Excel-based gap assessments) with an OSCAL-native data model. The tool lets any organization:
 
 1. Import control catalogs from any framework (NIST 800-171, ISO 27001, SIG, CMMC, NISPOM, custom)
 2. Define cross-framework control mappings (SIG question A.1 ↔ ISO 27001 A.5.1 ↔ NIST 800-171 3.1.1)
@@ -32,7 +32,7 @@ The first proof-of-concept use case is generating a SIG Lite Response SIG (135 q
 ### Project Structure
 
 ```
-crosswalk/
+attesting/
 ├── package.json
 ├── tsconfig.json
 ├── vitest.config.ts
@@ -170,7 +170,7 @@ The SQLite schema is the heart of the system. Everything flows from this data mo
 
 ```sql
 -- ============================================================
--- CROSSWALK DATABASE SCHEMA
+-- ATTESTING DATABASE SCHEMA
 -- ============================================================
 
 -- Organizations using the tool
@@ -513,10 +513,10 @@ ORDER BY c.sort_order;
 
 ```bash
 # Initialize a new organization
-crosswalk org init --name "Nutanix, Inc." --cage-code "6RG48"
+attesting org init --name "Nutanix, Inc." --cage-code "6RG48"
 
 # Define a product/system scope
-crosswalk scope create --name "On-Premises Products" \
+attesting scope create --name "On-Premises Products" \
   --description "Customers running Nutanix in their own data centers" \
   --type product
 ```
@@ -525,32 +525,32 @@ crosswalk scope create --name "On-Premises Products" \
 
 ```bash
 # Import NIST 800-171 from OSCAL JSON (download from NIST GitHub)
-crosswalk catalog import --format oscal \
+attesting catalog import --format oscal \
   --file data/catalogs/nist-800-171-r2.json \
   --name "NIST SP 800-171 Rev 2" \
   --short-name nist-800-171-r2
 
 # Import SIG Lite from the SIG Manager Content Library export
 # (User exports Content Library to CSV first, or we parse the .xlsm directly)
-crosswalk catalog import --format sig \
+attesting catalog import --format sig \
   --file "path/to/SIG_Manager_2026.xlsm" \
   --scope-level lite \
   --name "SIG Lite 2026" \
   --short-name sig-lite-2026
 
 # Import ISO 27001:2022 from CSV
-crosswalk catalog import --format csv \
+attesting catalog import --format csv \
   --file data/catalogs/iso-27001-2022.csv \
   --name "ISO/IEC 27001:2022 Annex A" \
   --short-name iso-27001-2022 \
   --columns "control_id=A,title=B,description=C,category=D"
 
 # List all imported catalogs
-crosswalk catalog list
+attesting catalog list
 
 # Inspect controls in a catalog
-crosswalk catalog inspect sig-lite-2026 --risk-domain A
-crosswalk catalog inspect nist-800-171-r2 --family "Access Control"
+attesting catalog inspect sig-lite-2026 --risk-domain A
+attesting catalog inspect nist-800-171-r2 --family "Access Control"
 ```
 
 ### Control Mappings
@@ -558,40 +558,40 @@ crosswalk catalog inspect nist-800-171-r2 --family "Access Control"
 ```bash
 # Import SIG-to-ISO27001 mappings from the SIG Content Library
 # (The SIG Content Library already has ISO 27001:2022 mapping columns)
-crosswalk mapping import --format csv \
+attesting mapping import --format csv \
   --file data/mappings/sig-to-iso27001.csv \
   --source-catalog sig-lite-2026 \
   --target-catalog iso-27001-2022
 
 # Import SIG-to-NIST mappings
-crosswalk mapping import --format csv \
+attesting mapping import --format csv \
   --file data/mappings/sig-to-nist800171.csv \
   --source-catalog sig-lite-2026 \
   --target-catalog nist-800-171-r2
 
 # Create a single mapping manually
-crosswalk mapping create \
+attesting mapping create \
   --source sig-lite-2026:A.1 \
   --target iso-27001-2022:A.5.1 \
   --relationship equivalent \
   --confidence high
 
 # Resolve: given one control, show all mapped equivalents
-crosswalk mapping resolve sig-lite-2026:A.1
+attesting mapping resolve sig-lite-2026:A.1
 # Output:
 #   sig-lite-2026:A.1 → iso-27001-2022:A.5.1 (equivalent, high)
 #   sig-lite-2026:A.1 → nist-800-171-r2:3.1.1 (related, medium)
 #   sig-lite-2026:A.1 → cmmc-2.0:AC.L2-3.1.1 (equivalent, high)
 
 # List all mappings between two catalogs
-crosswalk mapping list --source sig-lite-2026 --target iso-27001-2022
+attesting mapping list --source sig-lite-2026 --target iso-27001-2022
 ```
 
 ### Implementation Statements
 
 ```bash
 # Add an implementation statement for a control
-crosswalk impl add \
+attesting impl add \
   --control sig-lite-2026:A.1 \
   --scope "On-Premises Products" \
   --status implemented \
@@ -602,13 +602,13 @@ crosswalk impl add \
 
 # Bulk import implementations from CSV
 # CSV columns: control_id, status, sig_response, statement, responsible_role, responsibility_type
-crosswalk impl import --format csv \
+attesting impl import --format csv \
   --file my-implementations.csv \
   --catalog sig-lite-2026 \
   --scope "On-Premises Products"
 
 # Show implementation coverage stats
-crosswalk impl status --scope "On-Premises Products"
+attesting impl status --scope "On-Premises Products"
 # Output:
 #   SIG Lite 2026:          89/135 implemented (65.9%)
 #   ISO 27001:2022:         72/93 implemented (77.4%)
@@ -616,79 +616,79 @@ crosswalk impl status --scope "On-Premises Products"
 #   (coverage includes controls resolved via mappings)
 
 # List implementations for a specific framework
-crosswalk impl list --catalog sig-lite-2026 --scope "On-Premises Products" --status not-implemented
+attesting impl list --catalog sig-lite-2026 --scope "On-Premises Products" --status not-implemented
 ```
 
 ### Export
 
 ```bash
 # Export as SIG Lite Response SIG (.xlsm)
-crosswalk export sig \
+attesting export sig \
   --catalog sig-lite-2026 \
   --scope "On-Premises Products" \
   --format response-sig \
   --output "Nutanix_SIG_Lite_Response_OnPrem_2026.xlsm"
 
 # Export as SIG questionnaire (blank, for sending to vendors)
-crosswalk export sig \
+attesting export sig \
   --catalog sig-lite-2026 \
   --scope "On-Premises Products" \
   --format questionnaire \
   --output "Nutanix_SIG_Lite_Questionnaire_2026.xlsm"
 
 # Export as OSCAL component-definition (JSON)
-crosswalk export oscal \
+attesting export oscal \
   --type component-definition \
   --scope "On-Premises Products" \
   --output nutanix-onprem-component.json
 
 # Export as OSCAL system-security-plan (JSON)
-crosswalk export oscal \
+attesting export oscal \
   --type ssp \
   --scope "On-Premises Products" \
   --catalogs sig-lite-2026,nist-800-171-r2 \
   --output nutanix-onprem-ssp.json
 
 # Export as ISO 27001 SOA workbook
-crosswalk export soa \
+attesting export soa \
   --scope "On-Premises Products" \
   --output "Nutanix_ISO27001_SOA_2026.xlsx"
 
 # Export as CMMC self-assessment
-crosswalk export cmmc \
+attesting export cmmc \
   --scope "On-Premises Products" \
   --level 2 \
   --output "Nutanix_CMMC_L2_SelfAssessment.xlsx"
 
 # Export as PDF compliance summary report
-crosswalk export pdf \
+attesting export pdf \
   --scope "On-Premises Products" \
   --catalogs sig-lite-2026,iso-27001-2022,nist-800-171-r2 \
   --output "Nutanix_Compliance_Summary_2026.pdf"
 
 # Export full data as flat CSV (for analysis, Jira import, etc.)
-crosswalk export csv \
+attesting export csv \
   --scope "On-Premises Products" \
   --include-mappings \
-  --output "crosswalk_full_export.csv"
+  --output "attesting_full_export.csv"
 ```
 
 ### Assessment & POA&M
 
 ```bash
 # Create an assessment
-crosswalk assessment create \
+attesting assessment create \
   --name "CMMC Level 2 Self-Assessment Q1 2026" \
   --catalog cmmc-2.0 \
   --scope "On-Premises Products" \
   --type self
 
 # Run assessment (compares implementations to controls, generates results)
-crosswalk assessment evaluate \
+attesting assessment evaluate \
   --assessment "CMMC Level 2 Self-Assessment Q1 2026"
 
 # Generate POA&M from assessment findings
-crosswalk assessment poam \
+attesting assessment poam \
   --assessment "CMMC Level 2 Self-Assessment Q1 2026" \
   --output "Nutanix_CMMC_POAM.xlsx"
 ```
@@ -747,7 +747,7 @@ SIG questions are hierarchical. A parent question (e.g., A.1) may have child que
 4. For the hierarchical question behavior, embed minimal VBA that handles row visibility based on parent responses
 5. Include all SIG-standard worksheets (Copyright, Instructions, Dashboard, Business Info, Documentation, SIG 2026, Full)
 
-**IMPORTANT:** Do not distribute Shared Assessments' copyrighted content (question text) in the tool's source code or seed data. The tool imports question text from the user's licensed copy of the SIG Manager. The `sig-lite-2026.json` seed catalog should contain only the structure (question IDs, risk domains, control families, mappings) without the actual question text. The user populates question text by running `crosswalk catalog import --format sig` against their own licensed .xlsm file.
+**IMPORTANT:** Do not distribute Shared Assessments' copyrighted content (question text) in the tool's source code or seed data. The tool imports question text from the user's licensed copy of the SIG Manager. The `sig-lite-2026.json` seed catalog should contain only the structure (question IDs, risk domains, control families, mappings) without the actual question text. The user populates question text by running `attesting catalog import --format sig` against their own licensed .xlsm file.
 
 ---
 
@@ -858,7 +858,7 @@ The importer should:
 For any framework not already supported. User provides a CSV with configurable column mappings.
 
 ```bash
-crosswalk catalog import --format csv \
+attesting catalog import --format csv \
   --file my-framework.csv \
   --name "My Custom Framework" \
   --short-name my-framework \
@@ -937,8 +937,8 @@ coverage = (directly_implemented + mapped_implemented + not_applicable) / total_
 ### Why Not Just Extend SecurityPal
 
 - SecurityPal is a SaaS product with its own data model and limitations
-- Crosswalk is infrastructure-level: it feeds SecurityPal (and any other tool) with authoritative answers
-- SecurityPal handles customer-facing questionnaire volume; Crosswalk handles the compliance truth layer underneath
+- Attesting is infrastructure-level: it feeds SecurityPal (and any other tool) with authoritative answers
+- SecurityPal handles customer-facing questionnaire volume; Attesting handles the compliance truth layer underneath
 
 ---
 
@@ -1048,7 +1048,7 @@ Build in this exact order. Each step produces a testable, useful increment.
 
 1. Create the project directory and initialize:
    ```bash
-   mkdir crosswalk && cd crosswalk
+   mkdir attesting && cd attesting
    npm init -y
    npm install typescript @types/node commander better-sqlite3 @types/better-sqlite3 exceljs uuid
    npm install -D vitest

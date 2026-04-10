@@ -10,10 +10,10 @@ import path from 'path';
 import readline from 'readline';
 
 /**
- * Registers the `crosswalk catalog import-proprietary` subcommand.
+ * Registers the `attesting catalog import-proprietary` subcommand.
  *
  * Usage:
- *   crosswalk catalog import-proprietary <file> \
+ *   attesting catalog import-proprietary <file> \
  *     [--format <sig-xlsx|iso27001-xlsx|oscal-json|csv-generic>] \
  *     [--overwrite] \
  *     [--yes]

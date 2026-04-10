@@ -45,4 +45,4 @@ export function writeAuditEntry(
 }
 
 /** System actor constant for automated actions. */
-export const SYSTEM_ACTOR: Actor = { type: 'system', id: 'crosswalk' };
+export const SYSTEM_ACTOR: Actor = { type: 'system', id: 'attesting' };

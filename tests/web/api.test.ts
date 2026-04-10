@@ -1,6 +1,6 @@
 /**
  * API route tests using supertest.
- * Uses an in-memory SQLite database — never touches ~/.crosswalk/crosswalk.db.
+ * Uses an in-memory SQLite database — never touches ~/.attesting/attesting.db.
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';

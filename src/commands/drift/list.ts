@@ -3,7 +3,7 @@ import { db } from '../../db/connection.js';
 import { info, warn } from '../../utils/logger.js';
 
 /**
- * `crosswalk drift list` — list drift alerts with filters.
+ * `attesting drift list` — list drift alerts with filters.
  */
 export function registerDriftList(driftCommand: Command): void {
   driftCommand

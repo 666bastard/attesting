@@ -5,7 +5,7 @@ import { submitManualIntel } from '../../services/intel/manual-intel.js';
 import type { ShadowReport } from '../../services/intel/shadow-analysis.js';
 
 /**
- * `crosswalk intel submit` — submit manual intel as provisional.
+ * `attesting intel submit` — submit manual intel as provisional.
  */
 export function registerIntelSubmit(intelCommand: Command): void {
   intelCommand

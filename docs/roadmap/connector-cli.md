@@ -33,6 +33,6 @@
 
 ## Exit Criteria
 
-- [ ] `crosswalk connector --help` shows all 5 subcommands
+- [ ] `attesting connector --help` shows all 5 subcommands
 - [ ] Can register CISA KEV connector, sync it, and view the log
 - [ ] Health check reports connectivity status

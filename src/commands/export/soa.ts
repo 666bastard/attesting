@@ -4,10 +4,10 @@ import { exportSoaWorkbook } from '../../exporters/soa-workbook.js';
 import { success, error } from '../../utils/logger.js';
 
 /**
- * Registers the `crosswalk export soa` subcommand.
+ * Registers the `attesting export soa` subcommand.
  *
  * Usage:
- *   crosswalk export soa [--scope <scope_name>] --output <file.xlsx>
+ *   attesting export soa [--scope <scope_name>] --output <file.xlsx>
  */
 export function registerExportSoa(exportCommand: Command): void {
   exportCommand

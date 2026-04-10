@@ -45,7 +45,7 @@ async function runSetup(options: SetupOptions): Promise<void> {
     return;
   }
 
-  console.log('\n  Welcome to Crosswalk.\n');
+  console.log('\n  Welcome to Attesting.\n');
   console.log('  This wizard will walk you through initial setup.\n');
   console.log('  Every stage after organization setup can be skipped.\n');
 
@@ -314,7 +314,7 @@ async function runSetup(options: SetupOptions): Promise<void> {
           const stats = await adapter.sync('full');
           success(`  Sync complete: ${stats.created} vulnerabilities loaded.`);
         } catch (err: any) {
-          error(`  Sync failed: ${err.message}. You can retry later with: crosswalk connector sync ${id}`);
+          error(`  Sync failed: ${err.message}. You can retry later with: attesting connector sync ${id}`);
         }
       }
     } else {
@@ -347,7 +347,7 @@ async function runSetup(options: SetupOptions): Promise<void> {
     const connectorCount = finalState.connector_ids.length;
 
     console.log('\n  ┌──────────────────────────────────────────────┐');
-    console.log('  │  Crosswalk Setup Complete                    │');
+    console.log('  │  Attesting Setup Complete                    │');
     console.log('  ├──────────────────────────────────────────────┤');
     console.log(`  │  Organization:  ${(orgRow?.name ?? '—').padEnd(28)}│`);
     console.log(`  │  Catalogs:      ${String(catalogCount).padEnd(3)} active (${String(controlCount).padEnd(4)} controls)   │`);
@@ -358,9 +358,9 @@ async function runSetup(options: SetupOptions): Promise<void> {
     console.log(`  │  Connectors:    ${String(connectorCount).padEnd(28)}│`);
     console.log('  └──────────────────────────────────────────────┘');
     console.log('\n  What\'s next:');
-    console.log('    • Run `crosswalk serve` to open the dashboard');
-    console.log('    • Run `crosswalk assessment create` to start your first assessment');
-    console.log('    • Run `crosswalk drift check` to run your first posture check');
+    console.log('    • Run `attesting serve` to open the dashboard');
+    console.log('    • Run `attesting assessment create` to start your first assessment');
+    console.log('    • Run `attesting drift check` to run your first posture check');
     console.log();
 
     completeStage(database, 8);

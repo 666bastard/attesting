@@ -5,7 +5,7 @@ import { now } from '../../utils/dates.js';
 import { info, success, error, warn, debug } from '../../utils/logger.js';
 
 /**
- * Registers the `crosswalk mapping auto-link` subcommand.
+ * Registers the `attesting mapping auto-link` subcommand.
  *
  * Reads mapping_references from SIG control metadata and creates
  * control_mappings rows by matching reference IDs to controls in
@@ -279,8 +279,8 @@ function runAutoLink(options: AutoLinkOptions): void {
     error(
       `No mapping_references found in control metadata for "${options.source}".\n` +
       `  The catalog may need to be re-imported to include mapping references.\n` +
-      `  Delete it first:  sqlite3 ~/.crosswalk/crosswalk.db "DELETE FROM catalogs WHERE short_name='${options.source};"\n` +
-      `  Then re-import with: crosswalk catalog import --format sig ...`
+      `  Delete it first:  sqlite3 ~/.attesting/attesting.db "DELETE FROM catalogs WHERE short_name='${options.source};"\n` +
+      `  Then re-import with: attesting catalog import --format sig ...`
     );
     process.exit(1);
   }
@@ -443,6 +443,6 @@ function runAutoLink(options: AutoLinkOptions): void {
   // Summary by target catalog
   if (totalCreated > 0 || totalResolved > 0) {
     console.log('');
-    info('Verify with: crosswalk mapping list --source ' + options.source);
+    info('Verify with: attesting mapping list --source ' + options.source);
   }
 }

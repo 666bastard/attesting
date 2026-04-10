@@ -1,7 +1,7 @@
 /**
  * Tests for the cross-framework control mapping resolver.
  *
- * Uses a fully in-memory SQLite database so it never touches ~/.crosswalk/crosswalk.db.
+ * Uses a fully in-memory SQLite database so it never touches ~/.attesting/attesting.db.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';

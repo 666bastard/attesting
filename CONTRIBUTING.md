@@ -1,6 +1,6 @@
-# Contributing to Crosswalk
+# Contributing to Attesting
 
-Thanks for your interest. Crosswalk is an open-source GRC platform in active development and contributions are genuinely welcome — whether that's a new connector adapter, a bug fix, a framework importer, or documentation improvements.
+Thanks for your interest. Attesting is an open-source GRC platform in active development and contributions are genuinely welcome — whether that's a new connector adapter, a bug fix, a framework importer, or documentation improvements.
 
 ## Table of Contents
 
@@ -20,8 +20,8 @@ Thanks for your interest. Crosswalk is an open-source GRC platform in active dev
 
 ```bash
 # Fork and clone
-git clone https://github.com/YOUR-USERNAME/crosswalk.git
-cd crosswalk
+git clone https://github.com/YOUR-USERNAME/attesting.git
+cd attesting
 npm install
 
 # Run tests
@@ -45,7 +45,7 @@ npm run build
 
 **Requirements:** Node.js 20+, npm 10+.
 
-**Database location:** `~/.crosswalk/crosswalk.db`. Delete this file to start fresh. Schema and migrations apply automatically on first connection.
+**Database location:** `~/.attesting/attesting.db`. Delete this file to start fresh. Schema and migrations apply automatically on first connection.
 
 ## Project Structure
 
@@ -92,7 +92,7 @@ These decisions are intentional and should not be changed without an issue discu
 
 **OSCAL-native.** The internal data model aligns with NIST OSCAL 1.1.2. Catalogs, controls, implementations, and assessments use OSCAL terminology and structure. Exports produce valid OSCAL JSON. Non-OSCAL formats (SIG, ISO, CMMC) are translated at the import/export boundary, not stored in proprietary schemas.
 
-**CLI-first, web-second.** Every operation must be possible via CLI. The web UI is a convenience layer on top of the same API. CI/CD pipelines should be able to run Crosswalk commands without a browser.
+**CLI-first, web-second.** Every operation must be possible via CLI. The web UI is a convenience layer on top of the same API. CI/CD pipelines should be able to run Attesting commands without a browser.
 
 **Risk module is the hub.** External intelligence flows into the risk module and propagates outward to governance, compliance, and asset inventory. The propagation engine walks the entity graph on every state change. This is the core architectural differentiator — do not decouple the modules into isolated silos.
 
@@ -135,12 +135,12 @@ For significant architectural changes (new modules, schema redesigns, changing t
 
 ## Writing a New Connector Adapter
 
-Connectors are the integration layer between Crosswalk and external systems. To add one:
+Connectors are the integration layer between Attesting and external systems. To add one:
 
 1. Create a new file at `src/services/connectors/adapters/your-adapter.ts`.
 2. Extend `BaseAdapter` from `src/services/connectors/base-adapter.ts`.
 3. Implement `fetch(since: string | null): Promise<any[]>` — fetches records from the external system.
-4. Implement `transform(record: any): { _table: string; external_id: string; ... }` — transforms an external record into a Crosswalk entity. The `_table` field tells the base class which table to upsert into.
+4. Implement `transform(record: any): { _table: string; external_id: string; ... }` — transforms an external record into a Attesting entity. The `_table` field tells the base class which table to upsert into.
 5. For bidirectional adapters, also implement `push(entity: any): Promise<any>`.
 6. Register your adapter in `src/services/connectors/registry.ts`.
 7. Write tests.
@@ -175,8 +175,8 @@ The base class handles: sync logging, upsert logic (insert or update by `externa
 If you're adding support for a new compliance framework:
 
 1. Obtain the catalog data in OSCAL JSON, CSV, or another structured format. **Do not commit copyrighted control text** — only structural metadata (control IDs, family names, mapping references).
-2. If the format is OSCAL JSON, use the existing `crosswalk catalog import --format oscal` command.
-3. If the format is CSV, use `crosswalk catalog import --format csv` with appropriate column mappings.
+2. If the format is OSCAL JSON, use the existing `attesting catalog import --format oscal` command.
+3. If the format is CSV, use `attesting catalog import --format csv` with appropriate column mappings.
 4. If the format requires a custom parser, add an importer in `src/importers/`.
 5. Place any seed data (structural metadata only) in `data/catalogs/`.
 6. Add the framework to the "Bundled Catalogs" table in the README.

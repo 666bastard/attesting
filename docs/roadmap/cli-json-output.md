@@ -20,5 +20,5 @@ All commands in: `assessment/`, `catalog/`, `export/`, `implementation/`, `mappi
 ## Exit Criteria
 
 - [ ] Every command that produces output supports `--json`
-- [ ] `crosswalk risk list --json | jq '.[] | .risk_id'` works
+- [ ] `attesting risk list --json | jq '.[] | .risk_id'` works
 - [ ] No ANSI escape codes in JSON output

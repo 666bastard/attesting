@@ -4,7 +4,7 @@ import { log } from '../../utils/logger.js';
 import type { Catalog } from '../../models/catalog.js';
 
 /**
- * Registers the `crosswalk catalog list` subcommand.
+ * Registers the `attesting catalog list` subcommand.
  */
 export function registerCatalogList(catalogCommand: Command): void {
   catalogCommand
@@ -44,7 +44,7 @@ function runCatalogList(options: CatalogListOptions): void {
   }
 
   if (catalogs.length === 0) {
-    log('No catalogs imported yet. Use `crosswalk catalog import` to add one.');
+    log('No catalogs imported yet. Use `attesting catalog import` to add one.');
     return;
   }
 

@@ -27,10 +27,10 @@ COPY --from=builder /app/src/db/migrations/ src/db/migrations/
 COPY --from=builder /app/data/ data/
 
 # Database stored outside container
-VOLUME ["/root/.crosswalk"]
+VOLUME ["/root/.attesting"]
 
 ENV NODE_ENV=production
-ENV CROSSWALK_PORT=3000
+ENV ATTESTING_PORT=3000
 EXPOSE 3000
 
 ENTRYPOINT ["/sbin/tini", "--"]

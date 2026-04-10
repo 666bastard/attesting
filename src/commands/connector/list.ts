@@ -3,7 +3,7 @@ import { db } from '../../db/connection.js';
 import { info, warn } from '../../utils/logger.js';
 
 /**
- * `crosswalk connector list` — list registered connectors.
+ * `attesting connector list` — list registered connectors.
  */
 export function registerConnectorList(connCommand: Command): void {
   connCommand

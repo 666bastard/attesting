@@ -6,7 +6,7 @@ import { registerConnectorLog } from './log.js';
 import { registerConnectorHealth } from './health.js';
 
 /**
- * Registers the `crosswalk connector` command group with all subcommands.
+ * Registers the `attesting connector` command group with all subcommands.
  */
 export function registerConnectorCommands(program: Command): void {
   const connCommand = program

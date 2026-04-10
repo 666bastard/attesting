@@ -3,7 +3,7 @@ import { db } from '../../db/connection.js';
 import { info, warn } from '../../utils/logger.js';
 
 /**
- * `crosswalk drift tasks` — list auto-generated disposition tasks.
+ * `attesting drift tasks` — list auto-generated disposition tasks.
  */
 export function registerDriftTasks(driftCommand: Command): void {
   driftCommand

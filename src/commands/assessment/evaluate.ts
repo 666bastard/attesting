@@ -6,7 +6,7 @@ import { success, error, log } from '../../utils/logger.js';
 import { resolveControl } from '../../mappers/resolver.js';
 
 /**
- * Registers the `crosswalk assessment evaluate` subcommand.
+ * Registers the `attesting assessment evaluate` subcommand.
  *
  * Algorithm:
  *   For each control in the assessment's catalog:

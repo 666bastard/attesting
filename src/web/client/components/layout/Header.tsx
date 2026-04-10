@@ -14,7 +14,7 @@ export default function Header({ scope, onScopeChange }: HeaderProps) {
 
   useEffect(() => {
     getOrg().then(({ org, scopes: s }) => {
-      setOrgName(org?.name ?? 'Crosswalk');
+      setOrgName(org?.name ?? 'Attesting');
       setScopes(s);
     }).catch(() => {});
   }, []);

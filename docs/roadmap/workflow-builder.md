@@ -19,7 +19,7 @@ User-defined if/then automation rules. "When X happens, do Y." Extends the propa
 - **Service:** `src/services/workflows/engine.ts` — evaluated after propagation handlers run
 - **Actions:** assign_owner, create_task, send_notification, create_risk_exception, update_status, run_cli_command
 - **UI:** Visual rule builder — select trigger → configure filter → select action(s)
-- **CLI:** `crosswalk workflow list`, `crosswalk workflow create`, `crosswalk workflow enable/disable`
+- **CLI:** `attesting workflow list`, `attesting workflow create`, `attesting workflow enable/disable`
 
 ## Guardrails
 

@@ -9,7 +9,7 @@ type ScopeType = 'product' | 'system' | 'service' | 'facility';
 const SCOPE_TYPES: ScopeType[] = ['product', 'system', 'service', 'facility'];
 
 /**
- * Registers the `crosswalk scope` subcommands on the provided Command.
+ * Registers the `attesting scope` subcommands on the provided Command.
  */
 export function registerScopeCommands(program: Command): void {
   const scopeCommand = program
@@ -52,7 +52,7 @@ function runScopeCreate(options: ScopeCreateOptions): void {
 
   if (!org) {
     error(
-      'No organization found. Run `crosswalk org init --name <name>` first.'
+      'No organization found. Run `attesting org init --name <name>` first.'
     );
     process.exit(1);
   }
@@ -96,7 +96,7 @@ function runScopeList(): void {
 
   if (!org) {
     error(
-      'No organization found. Run `crosswalk org init --name <name>` first.'
+      'No organization found. Run `attesting org init --name <name>` first.'
     );
     process.exit(1);
   }
@@ -111,7 +111,7 @@ function runScopeList(): void {
   >[];
 
   if (scopes.length === 0) {
-    log('No scopes defined yet. Use `crosswalk scope create --name <name>`.');
+    log('No scopes defined yet. Use `attesting scope create --name <name>`.');
     return;
   }
 

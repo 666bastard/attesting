@@ -1,5 +1,5 @@
 -- ============================================================
--- CROSSWALK DATABASE SCHEMA
+-- ATTESTING DATABASE SCHEMA
 -- ============================================================
 
 -- Organizations using the tool

@@ -14,7 +14,7 @@ const DEFAULT_INTERVALS: Record<string, number> = {
 };
 
 /**
- * `crosswalk drift schedule` — show or configure scheduler intervals.
+ * `attesting drift schedule` — show or configure scheduler intervals.
  */
 export function registerDriftSchedule(driftCommand: Command): void {
   driftCommand

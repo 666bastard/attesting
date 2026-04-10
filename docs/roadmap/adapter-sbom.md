@@ -45,5 +45,5 @@ Parse Software Bill of Materials files. Create asset entries with component meta
 - [ ] CycloneDX JSON parsed → assets created
 - [ ] SPDX JSON parsed → assets created
 - [ ] Cross-reference against existing threat feeds generates correlations
-- [ ] CLI: `crosswalk catalog import-proprietary sbom.json --format cyclonedx`
+- [ ] CLI: `attesting catalog import-proprietary sbom.json --format cyclonedx`
 - [ ] Tests cover both formats + vulnerability correlation
