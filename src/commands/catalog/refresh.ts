@@ -33,12 +33,14 @@ export function registerCatalogRefresh(catalogCommand: Command): void {
       'Directory containing catalog JSON files',
       'data/catalogs'
     )
+    .option('--json', 'Output as JSON')
     .action(runCatalogRefresh);
 }
 
 interface RefreshOptions {
   catalog?: string;
   dataDir: string;
+  json?: boolean;
 }
 
 interface OscalControl {
@@ -219,6 +221,16 @@ function runCatalogRefresh(options: RefreshOptions): void {
     info(`  ${cat.short_name}: ${catUpdated} controls, ${catParams} params`);
     totalUpdated += catUpdated;
     totalParams += catParams;
+  }
+
+  if (options.json) {
+    console.log(JSON.stringify({
+      updated: totalUpdated,
+      params_loaded: totalParams,
+      skipped: totalSkipped,
+      errors: totalErrors,
+    }, null, 2));
+    return;
   }
 
   log('');

@@ -12,6 +12,7 @@ export function registerMappingList(mappingCommand: Command): void {
     .option('--source <catalog>', 'Filter by source catalog short name')
     .option('--target <catalog>', 'Filter by target catalog short name')
     .option('--limit <n>', 'Maximum number of results', '50')
+    .option('--json', 'Output as JSON')
     .action(runMappingList);
 }
 
@@ -19,6 +20,7 @@ interface MappingListOptions {
   source?: string;
   target?: string;
   limit: string;
+  json?: boolean;
 }
 
 function runMappingList(options: MappingListOptions): void {
@@ -63,6 +65,11 @@ function runMappingList(options: MappingListOptions): void {
   }
 
   const rows = database.prepare(sql).all(...params, limit) as MappingRow[];
+
+  if (options.json) {
+    console.log(JSON.stringify(rows, null, 2));
+    return;
+  }
 
   if (rows.length === 0) {
     warn('No mappings found.');

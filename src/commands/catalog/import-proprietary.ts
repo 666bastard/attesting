@@ -25,6 +25,7 @@ export function registerImportProprietary(catalogCommand: Command): void {
     .option('--format <format>', 'Override autodetected format')
     .option('--overwrite', 'Overwrite if catalog already exists')
     .option('--yes', 'Skip confirmation prompt')
+    .option('--json', 'Output as JSON (implies --yes)')
     .action(runImportProprietary);
 }
 
@@ -32,6 +33,7 @@ interface ImportProprietaryOptions {
   format?: string;
   overwrite?: boolean;
   yes?: boolean;
+  json?: boolean;
 }
 
 async function runImportProprietary(
@@ -121,8 +123,8 @@ async function runImportProprietary(
     }
   }
 
-  // Confirm
-  if (!options.yes) {
+  // Confirm (--json implies --yes)
+  if (!options.yes && !options.json) {
     const confirmed = await confirm('\n  Proceed with import? (y/N) ');
     if (!confirmed) {
       console.log('  Import cancelled.');
@@ -136,6 +138,17 @@ async function runImportProprietary(
   if (result.controls_imported === 0 && result.warnings.length > 0) {
     for (const w of result.warnings) error(w);
     process.exit(1);
+  }
+
+  if (options.json) {
+    console.log(JSON.stringify({
+      catalog_id: result.catalog_id,
+      catalog_name: preview.catalog_name,
+      controls_imported: result.controls_imported,
+      mappings_resolved: result.mappings_resolved,
+      warnings: result.warnings,
+    }, null, 2));
+    return;
   }
 
   success(`Imported ${result.controls_imported} controls into "${preview.catalog_name}"`);

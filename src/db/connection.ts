@@ -2,6 +2,11 @@ import Database from 'better-sqlite3';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { fileURLToPath } from 'url';
+
+// ESM-compatible __dirname shim (tsconfig module=NodeNext)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Splits a SQL file into individual statements, respecting parentheses

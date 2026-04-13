@@ -27,12 +27,14 @@ export function registerScopeCommands(program: Command): void {
       `Scope type (${SCOPE_TYPES.join(', ')})`,
       'product'
     )
+    .option('--json', 'Output as JSON')
     .action(runScopeCreate);
 
   // scope list
   scopeCommand
     .command('list')
     .description('List all scopes for the current organization')
+    .option('--json', 'Output as JSON')
     .action(runScopeList);
 }
 
@@ -40,6 +42,7 @@ interface ScopeCreateOptions {
   name: string;
   description?: string;
   type: string;
+  json?: boolean;
 }
 
 function runScopeCreate(options: ScopeCreateOptions): void {
@@ -83,10 +86,22 @@ function runScopeCreate(options: ScopeCreateOptions): void {
       timestamp
     );
 
+  if (options.json) {
+    console.log(JSON.stringify({
+      id,
+      org_id: org.id,
+      name: options.name,
+      scope_type: options.type,
+      description: options.description ?? null,
+      created_at: timestamp,
+    }, null, 2));
+    return;
+  }
+
   success(`Scope created: ${options.name}`);
 }
 
-function runScopeList(): void {
+function runScopeList(options: { json?: boolean } = {}): void {
   const database = db.getDb();
 
   // Require at least one organization
@@ -109,6 +124,11 @@ function runScopeList(): void {
     Scope,
     'id' | 'name' | 'scope_type' | 'description' | 'created_at'
   >[];
+
+  if (options.json) {
+    console.log(JSON.stringify(scopes, null, 2));
+    return;
+  }
 
   if (scopes.length === 0) {
     log('No scopes defined yet. Use `attesting scope create --name <name>`.');

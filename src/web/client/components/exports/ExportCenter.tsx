@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { runExport, getCatalogs } from '../../lib/api';
 import { useApi } from '../../hooks/useApi';
 import { useToastContext } from '../../App';
-import { FileSpreadsheet, FileJson, FileText, Download, Check, Loader2 } from 'lucide-react';
+import { FileSpreadsheet, FileJson, FileText, Download, Check, Loader2, FileCheck2 } from 'lucide-react';
 
 const FORMATS = [
   { id: 'sig', name: 'SIG Questionnaire', desc: 'Shared Assessments SIG response (.xlsx)', icon: FileSpreadsheet, needsCatalog: true },
@@ -16,6 +16,7 @@ export default function ExportCenter({ scope }: { scope: string }) {
   const [exporting, setExporting] = useState<string | null>(null);
   const [results, setResults] = useState<Record<string, { filename: string }>>({});
   const [selectedCatalog, setSelectedCatalog] = useState('');
+  const [reportFormat, setReportFormat] = useState<'pdf' | 'docx'>('pdf');
   const { data: catalogs } = useApi(() => getCatalogs(), []);
 
   const doExport = async (fmt: typeof FORMATS[0]) => {
@@ -26,6 +27,17 @@ export default function ExportCenter({ scope }: { scope: string }) {
       toast(`${fmt.name} exported`, 'success');
     } catch (e: any) { toast(e.message || 'Export failed', 'error'); }
     finally { setExporting(null); }
+  };
+
+  const downloadAuditReport = () => {
+    if (!selectedCatalog) { toast('Select a catalog first', 'error'); return; }
+    const qs = new URLSearchParams({
+      catalog: selectedCatalog,
+      format: reportFormat,
+      ...(scope ? { scope } : {}),
+    });
+    window.location.href = `/api/reports/audit?${qs.toString()}`;
+    toast(`Generating ${reportFormat.toUpperCase()} audit report…`, 'success');
   };
 
   return (
@@ -39,6 +51,49 @@ export default function ExportCenter({ scope }: { scope: string }) {
           <option value="">Auto-detect</option>
           {catalogs?.map((c: any) => <option key={c.short_name} value={c.short_name}>{c.name}</option>)}
         </select>
+      </div>
+
+      {/* Audit report card */}
+      <div className="glass p-5 mb-4 border-l-2" style={{ borderLeftColor: '#4338ca' }}>
+        <div className="flex items-start gap-3 mb-4">
+          <div className="p-2.5 rounded-xl" style={{ background: 'var(--bg-glass-strong)', boxShadow: 'var(--glow-indigo)' }}>
+            <FileCheck2 className="h-5 w-5 text-indigo-400" aria-hidden="true" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>Audit-Ready Compliance Report</h3>
+            <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
+              Professional audit report: executive summary, control inventory, evidence health, risk &amp; POA&amp;M. Ships to auditors.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="inline-flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+            {(['pdf', 'docx'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setReportFormat(f)}
+                className="px-3 py-1.5 text-[11px] uppercase tracking-wider font-medium transition"
+                style={{
+                  background: reportFormat === f ? 'var(--bg-glass-strong)' : 'transparent',
+                  color: reportFormat === f ? 'var(--text-primary)' : 'var(--text-dim)',
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={downloadAuditReport}
+            disabled={!selectedCatalog}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 text-white text-[12px] font-medium rounded-xl hover:bg-indigo-500 disabled:opacity-50 transition-colors shadow-lg shadow-indigo-600/20"
+          >
+            <Download className="h-3.5 w-3.5" aria-hidden="true" />
+            Generate {reportFormat.toUpperCase()}
+          </button>
+          {!selectedCatalog && (
+            <span className="text-[11px]" style={{ color: 'var(--text-dim)' }}>Select a catalog above to enable.</span>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

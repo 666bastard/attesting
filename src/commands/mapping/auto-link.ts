@@ -20,6 +20,7 @@ export function registerMappingAutoLink(mappingCommand: Command): void {
     .requiredOption('--source <shortName>', 'Source catalog short name (e.g. sig-lite-2026)')
     .option('--target <shortName>', 'Limit to a specific target catalog (optional)')
     .option('--dry-run', 'Show what would be created without writing to the database')
+    .option('--json', 'Output as JSON')
     .action(runAutoLink);
 }
 
@@ -27,6 +28,7 @@ interface AutoLinkOptions {
   source: string;
   target?: string;
   dryRun?: boolean;
+  json?: boolean;
 }
 
 interface TargetCatalog {
@@ -420,6 +422,20 @@ function runAutoLink(options: AutoLinkOptions): void {
   });
 
   runLink();
+
+  if (options.json) {
+    console.log(JSON.stringify({
+      source: sourceCatalog.short_name,
+      targets: targetCatalogs.map((c) => c.short_name),
+      dry_run: !!options.dryRun,
+      created: totalCreated,
+      duplicates: totalDuplicates,
+      resolved: totalResolved,
+      unresolved: totalUnresolved,
+      unresolved_samples: unresolvedSamples,
+    }, null, 2));
+    return;
+  }
 
   // Report
   console.log('');

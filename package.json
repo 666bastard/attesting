@@ -1,17 +1,48 @@
 {
   "name": "attesting",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "OSCAL-native compliance control platform. Map controls across frameworks, write implementations once, export to any format.",
+  "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "attesting": "dist/index.js"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./services/scoring": {
+      "types": "./dist/services/scoring/compliance-score.d.ts",
+      "import": "./dist/services/scoring/compliance-score.js"
+    },
+    "./services/evidence": {
+      "types": "./dist/services/evidence/lifecycle.d.ts",
+      "import": "./dist/services/evidence/lifecycle.js"
+    },
+    "./services/reports": {
+      "types": "./dist/services/reports/aggregate.d.ts",
+      "import": "./dist/services/reports/aggregate.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/",
+    "data/catalogs/",
+    "data/mappings/",
+    "data/templates/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "oscal",
@@ -28,45 +59,52 @@
   ],
   "author": "Anthony Rossi III",
   "license": "MIT",
+  "homepage": "https://github.com/xtonyknucklesx/attesting#readme",
+  "bugs": {
+    "url": "https://github.com/xtonyknucklesx/attesting/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/xtonyknucklesx/attesting"
+    "url": "git+https://github.com/xtonyknucklesx/attesting.git"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20"
   },
   "dependencies": {
     "@types/multer": "^2.1.0",
-    "better-sqlite3": "^12.8.0",
+    "better-sqlite3": "^11.0.0",
     "clsx": "^2.1.1",
-    "commander": "^14.0.3",
+    "commander": "^12.0.0",
     "cors": "^2.8.6",
+    "docx": "^9.6.1",
     "dompurify": "^3.3.3",
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
-    "lucide-react": "^1.8.0",
+    "lucide-react": "^1.7.0",
     "multer": "^2.1.1",
-    "pdfkit": "^0.18.0",
+    "pdfkit": "^0.15.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.0",
     "recharts": "^3.8.1",
+    "swagger-ui-express": "^5.0.1",
     "tailwind-merge": "^3.5.0",
-    "uuid": "^13.0.0",
+    "uuid": "^10.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
     "@types/better-sqlite3": "^7.6.0",
     "@types/cors": "^2.8.19",
-    "@types/dompurify": "^3.2.0",
+    "@types/dompurify": "^3.0.5",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.6.0",
+    "@types/node": "^20.0.0",
     "@types/pdfkit": "^0.17.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/supertest": "^7.2.0",
+    "@types/swagger-ui-express": "^4.1.8",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.27",
@@ -74,7 +112,7 @@
     "supertest": "^7.2.2",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.0.0",
-    "typescript": "^6.0.2",
+    "typescript": "^5.4.0",
     "vitest": "^4.1.4"
   }
 }

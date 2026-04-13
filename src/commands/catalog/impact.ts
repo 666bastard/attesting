@@ -15,6 +15,7 @@ export function registerCatalogImpact(catalogCommand: Command): void {
     .requiredOption('--old <shortName>', 'Old catalog version short name')
     .requiredOption('--new <shortName>', 'New catalog version short name')
     .option('--scope <name>', 'Scope name for implementation impact')
+    .option('--json', 'Output as JSON')
     .action(runCatalogImpact);
 }
 
@@ -22,6 +23,7 @@ interface CatalogImpactOptions {
   old: string;
   new: string;
   scope?: string;
+  json?: boolean;
 }
 
 function pad(s: string, width: number): string {
@@ -71,8 +73,10 @@ function runCatalogImpact(options: CatalogImpactOptions): void {
     }
   }
 
-  info(`Impact analysis: ${options.old} → ${options.new}`);
-  if (scopeId) info(`Scope: ${scopeLabel}`);
+  if (!options.json) {
+    info(`Impact analysis: ${options.old} → ${options.new}`);
+    if (scopeId) info(`Scope: ${scopeLabel}`);
+  }
 
   // Run diff
   const diff = diffCatalogs(options.old, options.new, database, org.id, scopeId ?? undefined);
@@ -81,6 +85,27 @@ function runCatalogImpact(options: CatalogImpactOptions): void {
   const allCoverage = calculateCoverage(org.id, scopeId, database);
   const oldCov = allCoverage.find((c) => c.catalogShortName === options.old);
   const newCov = allCoverage.find((c) => c.catalogShortName === options.new);
+
+  if (options.json) {
+    const autoMigrateCount = diff.unchanged.filter((c) => c.hasExistingImpl).length +
+      diff.renumbered.filter((c) => c.hasExistingImpl).length;
+    const needsReviewCount = diff.modified.filter((c) => c.hasExistingImpl).length;
+    const orphanedCount = diff.removed.filter((c) => c.hasExistingImpl).length;
+    console.log(JSON.stringify({
+      old_catalog: options.old,
+      new_catalog: options.new,
+      scope: scopeLabel,
+      summary: diff.summary,
+      migration: {
+        auto_migrated: autoMigrateCount,
+        needs_review: needsReviewCount,
+        new_gaps: diff.summary.added,
+        orphaned: orphanedCount,
+      },
+      coverage: { old: oldCov ?? null, new: newCov ?? null },
+    }, null, 2));
+    return;
+  }
 
   // ─── Section 1: Migration Summary ───
   log('');

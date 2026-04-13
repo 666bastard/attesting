@@ -149,14 +149,26 @@ export function seedDriftAlert(db: Database.Database, opts: {
 }
 
 /** Seed a connector. */
-export function seedConnector(db: Database.Database, opts: { adapterClass?: string } = {}) {
+export function seedConnector(
+  db: Database.Database,
+  opts: { adapterClass?: string; config?: Record<string, unknown> } = {},
+) {
   const id = generateUuid();
   db.prepare(`
     INSERT INTO connectors (id, name, connector_type, direction, target_module,
-      adapter_class, is_enabled, health_status, sync_mode, created_at, updated_at)
-    VALUES (?,?,?,?,?,?,1,'unknown','manual',?,?)
-  `).run(id, 'Test Connector', 'threat_feed', 'inbound', 'multi',
-    opts.adapterClass ?? 'CISAKEVAdapter', ts(), ts());
+      adapter_class, config, is_enabled, health_status, sync_mode, created_at, updated_at)
+    VALUES (?,?,?,?,?,?,?,1,'unknown','manual',?,?)
+  `).run(
+    id,
+    'Test Connector',
+    'threat_feed',
+    'inbound',
+    'multi',
+    opts.adapterClass ?? 'CISAKEVAdapter',
+    opts.config ? JSON.stringify(opts.config) : null,
+    ts(),
+    ts(),
+  );
   return id;
 }
 

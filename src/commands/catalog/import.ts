@@ -31,6 +31,7 @@ export function registerCatalogImport(catalogCommand: Command): void {
     .option('--publisher <publisher>', 'Publisher name (e.g. NIST, ISO)')
     .option('--version <version>', 'Catalog version string')
     .option('--scope-level <level>', 'SIG scope level filter: Lite | Core | Detail')
+    .option('--json', 'Output as JSON')
     .action(runCatalogImport);
 }
 
@@ -43,6 +44,7 @@ interface CatalogImportOptions {
   publisher?: string;
   version?: string;
   scopeLevel?: string;
+  json?: boolean;
 }
 
 async function runCatalogImport(options: CatalogImportOptions): Promise<void> {
@@ -140,6 +142,11 @@ function runCsvImport(
     .prepare('UPDATE catalogs SET total_controls = ?, updated_at = ? WHERE id = ?')
     .run(result.imported, now(), catalogId);
 
+  if (options.json) {
+    console.log(JSON.stringify({ catalog: options.shortName, imported: result.imported, errors: result.errors }, null, 2));
+    return;
+  }
+
   if (result.errors.length > 0) {
     for (const err of result.errors) {
       error(err);
@@ -174,6 +181,17 @@ async function runSigImport(
     .prepare('UPDATE catalogs SET total_controls = ?, updated_at = ? WHERE id = ?')
     .run(result.imported, now(), catalogId);
 
+  if (options.json) {
+    console.log(JSON.stringify({
+      catalog: options.shortName,
+      imported: result.imported,
+      framework_columns: result.frameworkColumns,
+      mappings_extracted: result.mappingsExtracted,
+      errors: result.errors,
+    }, null, 2));
+    return;
+  }
+
   if (result.errors.length > 0) {
     for (const err of result.errors) {
       error(err);
@@ -203,6 +221,11 @@ function runOscalImport(
   database
     .prepare('UPDATE catalogs SET total_controls = ?, updated_at = ? WHERE id = ?')
     .run(result.imported, now(), catalogId);
+
+  if (options.json) {
+    console.log(JSON.stringify({ catalog: options.shortName, imported: result.imported, errors: result.errors }, null, 2));
+    return;
+  }
 
   if (result.errors.length > 0) {
     for (const err of result.errors) {

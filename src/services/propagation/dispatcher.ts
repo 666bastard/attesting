@@ -10,11 +10,16 @@ import { onEvidenceChange } from './evidence-handlers.js';
 import { onAssetChange } from './asset-handlers.js';
 import { onDispositionApproved } from './disposition-handlers.js';
 import { onConnectorStateChange } from './connector-handlers.js';
+import {
+  recalculateScoreForImplementation,
+  recalculateScoreForEvidence,
+  recalculateScoreForAssessment,
+} from './scoring-handlers.js';
 
 export type EntityType =
   | 'policy' | 'policy_section' | 'implementation'
   | 'evidence' | 'asset' | 'risk' | 'threat_input'
-  | 'connector' | 'disposition';
+  | 'connector' | 'disposition' | 'assessment';
 
 /**
  * Central dispatcher for all state-change propagation.
@@ -39,18 +44,47 @@ export function propagate(
     policy:          () => handlePolicy(db, ctx, entityId, action, prev, next),
     policy_section:  () => onPolicySectionChange(db, ctx, entityId),
     implementation:  () => handleImplementation(db, ctx, entityId, prev, next),
-    evidence:        () => onEvidenceChange(db, ctx, entityId, prev, next),
+    evidence:        () => handleEvidence(db, ctx, entityId, prev, next),
     asset:           () => onAssetChange(db, ctx, entityId, prev, next),
     risk:            () => {}, // risk changes don't cascade further currently
     threat_input:    () => onThreatIngested(db, ctx, entityId),
     connector:       () => onConnectorStateChange(db, ctx, entityId, next),
     disposition:     () => handleDisposition(db, ctx, entityId, action, next),
+    assessment:      () => recalculateScoreForAssessment(db, ctx, entityId),
   };
 
   const handler = handlers[entityType];
   if (handler) {
-    handler();
-    writeAuditEntry(db, entityType, entityId, action as any, actor, prev, next);
+    // Phase 5H — wrap handler so one bad handler doesn't crash the caller.
+    // Errors are logged into the propagation context and execution continues.
+    try {
+      handler();
+    } catch (err: any) {
+      ctx.log.push({
+        type: 'handler_error',
+        timestamp: new Date().toISOString(),
+        dry_run: ctx.dryRun,
+        entity_type: entityType,
+        entity_id: entityId,
+        action,
+        error: err?.message ?? String(err),
+        stack: err?.stack,
+      });
+    }
+    // Audit entry still writes even if the handler threw — we want the
+    // record of intent regardless of cascade success.
+    try {
+      writeAuditEntry(db, entityType, entityId, action as any, actor, prev, next);
+    } catch (err: any) {
+      ctx.log.push({
+        type: 'audit_error',
+        timestamp: new Date().toISOString(),
+        dry_run: ctx.dryRun,
+        entity_type: entityType,
+        entity_id: entityId,
+        error: err?.message ?? String(err),
+      });
+    }
   }
 
   return ctx.log;
@@ -80,7 +114,20 @@ export function shadowPropagate(
   };
 
   const handler = handlers[entityType];
-  if (handler) handler();
+  if (handler) {
+    try {
+      handler();
+    } catch (err: any) {
+      ctx.log.push({
+        type: 'handler_error',
+        timestamp: new Date().toISOString(),
+        dry_run: ctx.dryRun,
+        entity_type: entityType,
+        entity_id: entityId,
+        error: err?.message ?? String(err),
+      });
+    }
+  }
 
   return {
     impacts: ctx.log,
@@ -118,6 +165,17 @@ function handleImplementation(
       recalculateRiskForControl(db, ctx, impl.primary_control_id);
     }
   }
+  // Always recompute compliance score (status/statement/responsibility changes
+  // can all shift coverage). snapshotScore is cheap (one catalog).
+  recalculateScoreForImplementation(db, ctx, implId);
+}
+
+function handleEvidence(
+  db: Database.Database, ctx: PropagationContext,
+  evidenceId: string, prev: any, next: any,
+): void {
+  onEvidenceChange(db, ctx, evidenceId, prev, next);
+  recalculateScoreForEvidence(db, ctx, evidenceId);
 }
 
 function handleDisposition(

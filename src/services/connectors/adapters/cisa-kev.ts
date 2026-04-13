@@ -1,5 +1,6 @@
 import type Database from 'better-sqlite3';
 import { BaseAdapter } from '../base-adapter.js';
+import { fetchWithTimeout } from '../utils/fetch-with-timeout.js';
 
 const DEFAULT_FEED_URL =
   'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json';
@@ -14,7 +15,10 @@ export class CISAKEVAdapter extends BaseAdapter {
   }
 
   async fetch(since: string | null): Promise<any[]> {
-    const res = await fetch(this.config.feed_url);
+    const res = await fetchWithTimeout(this.config.feed_url, {
+      timeoutMs: this.timeoutMs(),
+      adapter: 'CISA KEV',
+    });
     if (!res.ok) throw new Error(`CISA KEV fetch failed: ${res.status}`);
 
     const data: any = await res.json();

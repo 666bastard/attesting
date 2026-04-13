@@ -17,6 +17,7 @@ export function registerCatalogDiff(catalogCommand: Command): void {
     .requiredOption('--new <shortName>', 'New catalog version short name')
     .option('--output <file>', 'Output file path (.json or .csv)')
     .option('--scope <name>', 'Scope name for implementation impact analysis')
+    .option('--json', 'Output as JSON')
     .action(runCatalogDiff);
 }
 
@@ -25,6 +26,7 @@ interface CatalogDiffOptions {
   new: string;
   output?: string;
   scope?: string;
+  json?: boolean;
 }
 
 function runCatalogDiff(options: CatalogDiffOptions): void {
@@ -58,7 +60,7 @@ function runCatalogDiff(options: CatalogDiffOptions): void {
     }
   }
 
-  info(`Comparing: ${options.old} → ${options.new}`);
+  if (!options.json) info(`Comparing: ${options.old} → ${options.new}`);
 
   const result = diffCatalogs(
     options.old,
@@ -67,6 +69,22 @@ function runCatalogDiff(options: CatalogDiffOptions): void {
     org?.id,
     scopeId ?? undefined
   );
+
+  if (options.json) {
+    const payload = {
+      oldCatalog: result.oldCatalogShortName,
+      newCatalog: result.newCatalogShortName,
+      summary: result.summary,
+      changes: [
+        ...result.added.map(formatChangeForJson),
+        ...result.removed.map(formatChangeForJson),
+        ...result.modified.map(formatChangeForJson),
+        ...result.renumbered.map(formatChangeForJson),
+      ],
+    };
+    console.log(JSON.stringify(payload, null, 2));
+    return;
+  }
 
   // Handle output
   if (options.output) {

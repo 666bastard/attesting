@@ -1,205 +1,279 @@
-![CI](https://github.com/xtonyknucklesx/attesting/actions/workflows/ci.yml/badge.svg)
-
 # Attesting
 
-Open-source, OSCAL-native GRC platform. Map controls across frameworks, manage risk with live threat intelligence, and detect compliance drift — all from a single source of truth.
+[![CI](https://github.com/xtonyknucklesx/attesting/actions/workflows/ci.yml/badge.svg)](https://github.com/xtonyknucklesx/attesting/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-green)](package.json)
+[![Tests](https://img.shields.io/badge/tests-664%20passing-brightgreen)](tests/)
 
-## The Problem
+**OSCAL-native, local-first GRC platform.** Attesting treats governance, risk, and compliance as one connected graph — controls, evidence, risks, and threats all flow through a single SQLite database and propagate to each other as state changes.
 
-Compliance teams answer the same security questions across dozens of frameworks using disconnected spreadsheets. Risk registers live in one tool, policies in another, evidence in a shared drive, threat intel in an email thread. When a policy changes, nobody knows which controls are affected. When a new CVE drops, nobody knows which assets are exposed or which risk scores need updating. When an auditor asks for evidence, everyone scrambles.
+## What it is
 
-The industry-standard tooling — SIG Manager in Excel, SOAs in spreadsheets, risk registers in SharePoint — makes this worse. There's no single source of truth, no cross-module propagation, and no way for a change in one area to automatically surface its impact everywhere else.
+Attesting is a CLI + Web UI + HTTP API for teams that need to satisfy multiple compliance frameworks without spreadsheets. You import control catalogs (NIST 800-53, ISO 27001, CMMC, SIG, 10+ more), write implementation statements once, and they resolve across every mapped framework. Evidence moves through a lifecycle state machine. Compliance scores recompute when implementations or evidence change. A drift scheduler watches the graph and raises alerts when something slips. Audit-ready PDF/DOCX reports ship with one command.
 
-## What Attesting Does
+Everything runs locally against a single SQLite file. No cloud dependency, no account required, no proprietary lock-in. OSCAL 1.1.2 is the native data model.
 
-Attesting treats governance, risk, and compliance as a connected graph, not three separate tabs.
+## Key features
 
-**Compliance engine** — Import control catalogs from any framework. Map controls across frameworks so one implementation statement resolves everywhere. Export in any format: SIG questionnaires, OSCAL JSON, ISO SOAs, PDF reports, CSV.
+- **14 bundled catalogs** — NIST 800-53 (+4 baselines), 800-171, CSF 2.0, 800-218, ISO 27001, CMMC 2.0, HIPAA, SOC 2, PCI DSS 4.0, GDPR, CCPA/CPRA, EU AI Act, NISPOM
+- **282 pre-resolved cross-framework mappings** — write once, satisfy many
+- **Compliance scoring engine** (Phase 8A) — weighted three-factor formula with per-family breakdown and time-series history
+- **Executive dashboard** (Phase 8B) — single-call aggregated posture summary with gauge, trend, risk, drift, POA&M widgets; printable board handouts
+- **Audit-ready reports** (Phase 8C) — professional PDF and DOCX generators with cover, control inventory, risk summary, methodology appendix
+- **Continuous monitoring** (Phase 8D) — threshold, delta, and trend alerting wired into the drift scheduler
+- **Evidence lifecycle** (Phase 8E) — strict state machine (draft → submitted → reviewed → accepted → expiring → expired → archived), reviewer workflow, renewal reminders, version chaining
+- **11 connector adapters** — CISA KEV, NIST NVD, SBOM (CycloneDX + SPDX), CrowdStrike, ServiceNow, Jira, Splunk, Okta, Azure AD, AWS Security Hub, GCP SCC
+- **Drift detection engine** — 8 scheduled checks for evidence staleness, policy reviews, risk exceptions, disposition expiry, posture monitor, evidence expiry sweep
+- **Propagation engine** — state changes cascade automatically (implementation change → risk recalc → score snapshot → alert)
+- **CLI + Web UI + HTTP API** — every capability available in all three surfaces
+- **664 tests, 100% pass rate** — across 71 files
 
-**Governance module** — Track policies with granular section-level drift detection. When a policy section changes, every control implementation referencing it gets flagged automatically. Manage committees, meeting minutes, and role assignments.
-
-**Risk management** — Maintain a risk register with a configurable 5×5 matrix. Link risks to controls and assets. Residual scores recalculate automatically when control effectiveness changes. Risk exceptions with expiry tracking.
-
-**Threat intelligence** — Ingest feeds from CISA KEV, STIX/TAXII, NVD, and sector ISACs. Threats auto-correlate against your asset inventory by platform and propagate through the risk module. Manual intel enters as provisional, runs a shadow impact analysis showing what *would* change if confirmed, and promotes to a full threat when corroborated.
-
-**Asset inventory** — Track systems, endpoints, applications, and services with platform metadata, data classification, and boundary assignment. Assets link to risks, threats, and control implementations for full scope visibility.
-
-**Drift detection** — A background engine monitors the entire graph for misalignment: stale policy references, expired evidence, risk threshold breaches, expiring exceptions, connector failures. Analysts respond to drift alerts using natural language, and dispositions route through a supervisor approval workflow.
-
-**Integration layer** — Connector adapter framework for external systems. CISA KEV adapter ships built-in. Architecture supports SIEM, CMDB, ticketing, identity, SBOM, vulnerability scanner, and cloud provider connectors. Every sync is logged and health-checked.
-
-## Architecture
-
-```
-External Intel ──→ Risk Module ──→ Governance
-  (CISA, STIX,      (hub)          (policies, sections)
-   NVD, ISACs)         │
-                       ├──→ Compliance
-                       │    (controls, evidence, mappings)
-                       │
-                       └──→ Asset Inventory
-                            (systems, platforms, boundaries)
-
-       Drift Engine watches all modules for misalignment
-```
-
-- **CLI-first** — scriptable, CI/CD-ready, 23+ commands
-- **Web UI** — React/Tailwind dashboard with dark mode
-- **SQLite backend** — local-first, single file, zero config
-- **OSCAL-native** — data model aligns with NIST OSCAL 1.1.2
-- **TypeScript** — single language across CLI, API, importers, exporters
-- **Migration system** — numbered SQL migrations applied automatically
-
-## Quick Start
+## Quick start
 
 ```bash
-git clone https://github.com/xtonyknucklesx/attesting.git
-cd attesting
-npm install
-npm run build
+npm install -g attesting      # requires Node 20+
+attesting org init --name "Acme Corp"
+attesting scope create --name "Production" --type product
 
-# Initialize your organization
-attesting org init --name "My Company"
-attesting scope create --name "My Product" --type product
-
-# Import frameworks
+# Import a bundled framework
 attesting catalog import --format oscal \
   --file data/catalogs/nist-800-53-r5.json \
-  --name "NIST 800-53" --short-name nist-800-53-r5
+  --name "NIST SP 800-53 Rev 5" --short-name nist-800-53-r5
 
-attesting catalog import --format sig \
-  --file path/to/SIG_Manager_2026.xlsm \
-  --scope-level lite --name "SIG Lite 2026" --short-name sig-lite-2026
+# Check coverage
+attesting score show --catalog nist-800-53-r5 --scope Production
 
-# Import cross-framework mappings
-attesting mapping import --format csv \
-  --file data/mappings/sig-to-nist800171.csv \
-  --source-catalog sig-lite-2026 --target-catalog nist-800-171-r3
-
-# Add an implementation (resolves across all mapped frameworks)
-attesting impl add \
-  --control sig-lite-2026:A.1 \
-  --scope "My Product" \
-  --status implemented \
-  --response Yes \
-  --statement "We maintain a formalized risk governance policy approved by the board."
-
-# Check what that implementation covers
-attesting mapping resolve sig-lite-2026:A.1
-
-# Check coverage across all frameworks
-attesting impl status --scope "My Product"
-
-# Export
-attesting export sig --catalog sig-lite-2026 --scope "My Product" \
-  --format response-sig --output my-sig-response.xlsm
-attesting export oscal --type component-definition --scope "My Product" \
-  --output my-component.json
-
-# Start the web UI
+# Start the web UI + API
 attesting serve --port 3000
+# → browse http://localhost:3000 for the dashboard
+# → http://localhost:3000/api/docs for Swagger UI
 ```
 
-## Bundled Catalogs
+## CLI reference
 
-Attesting ships with 14 catalogs covering 3,206 controls:
+Every command supports `--json` for machine-readable output. Run `attesting <group> --help` for full details.
 
-| Framework | Controls | Source Format |
-|-----------|----------|---------------|
-| NIST SP 800-53 Rev 5 | 1,189 | OSCAL JSON |
-| NIST SP 800-171 Rev 3 | 110 | OSCAL JSON |
-| NIST CSF 2.0 | 106 | OSCAL JSON |
-| NIST SP 800-218 (SSDF) | 43 | OSCAL JSON |
-| NIST 800-53 Baselines (×4) | varies | OSCAL JSON |
-| SIG Lite 2026 | 135 | SIG .xlsm |
-| ISO/IEC 27001:2022 | 93+22 | CSV |
-| CMMC 2.0 Level 2 | 110 | CSV |
-| NISPOM 32 CFR 117 | varies | CSV |
-| GDPR | varies | CSV |
-| EU AI Act | varies | CSV |
-| CCPA/CPRA | varies | CSV |
-| HIPAA Security Rule | varies | CSV |
-| SOC 2 TSC | varies | CSV |
-| PCI DSS 4.0 | varies | CSV |
+### Catalog management
+- `catalog import` — import a catalog (OSCAL JSON, SIG .xlsm, CSV)
+- `catalog list` — list all imported catalogs
+- `catalog inspect` — show catalog contents + control count
+- `catalog diff` — compare two catalog versions
+- `catalog impact` — impact analysis for catalog updates
+- `catalog update` — update catalog from source
+- `catalog refresh` — re-import catalog from its original file
+- `catalog watch` — register a catalog source for update notifications
 
-282 cross-framework mappings ship pre-resolved with zero unresolved references.
+### Mappings
+- `mapping create` — create a single control-to-control mapping
+- `mapping import` — bulk import mappings from CSV
+- `mapping list` — list mappings with filters
+- `mapping resolve` — resolve direct + transitive mappings for a control
+- `mapping auto-link` — suggest mappings via similarity
 
-## Data Model
+### Implementations
+- `impl add` — add an implementation statement
+- `impl edit` — edit an implementation
+- `impl list` — list implementations with filters
+- `impl status` — coverage summary for a scope
+- `impl import` — bulk import implementations from CSV
 
-Six interconnected layers, all in a single SQLite database:
+### Risk register
+- `risk create` — create a risk
+- `risk list` — list risks with filters
+- `risk update` — update a risk
+- `risk link` — link controls to a risk
+- `risk exceptions` — manage risk exceptions
+- `risk matrix` — view/update the risk matrix
 
-| Layer | What It Stores |
-|-------|---------------|
-| **Catalogs & Controls** | Controls from any framework, with full-text search and OSCAL parameters |
-| **Mappings** | Cross-framework control relationships (equivalent, subset, superset, related) |
-| **Implementations** | How your org satisfies each control — write once, resolve everywhere |
-| **Governance** | Policies with section-level hashing, committees, role assignments |
-| **Risk** | Risk register, matrix, exceptions, control linkage, asset exposure |
-| **Threat Intel** | Ingested feeds, manual intel with shadow impact, asset correlations |
+### Compliance scoring (Phase 8A)
+- `score show` — show current score for a catalog + scope
+- `score snapshot` — persist a new snapshot
+- `score history` — show score trend over time
+- `score summary` — cross-catalog summary for a scope
 
-Supporting infrastructure: asset inventory, drift alerts, dispositions with NLP classification and approval workflow, integration connectors, and a full audit log.
+### Evidence lifecycle (Phase 8E)
+- `evidence list` — list evidence with status/implementation filters
+- `evidence show` — detail + full state history
+- `evidence create` — add a new evidence artifact (starts as draft)
+- `evidence transition` — apply a state machine action (submit/review/accept/reject/renew/archive)
+- `evidence freshness` — cross-catalog freshness summary
+
+### Continuous monitoring (Phase 8D)
+- `monitor status` — current posture findings across all catalogs
+- `monitor check` — run the posture monitor on demand
+- `monitor configure` — set per-scope/catalog thresholds
+- `monitor thresholds` — list or resolve configured thresholds
+
+### Audit reports (Phase 8C)
+- `report audit` — generate an audit-ready PDF or DOCX report
+
+### Intelligence
+- `intel list` — list threat inputs
+- `intel submit` — submit manual intel
+- `intel promote` — promote provisional intel to confirmed
+- `intel corroborate` — auto-corroborate against threat feeds
+- `intel shadow` — show shadow impact of hypothetical intel
+
+### Drift & dispositions
+- `drift list` — list open drift alerts
+- `drift check` — run a named drift check
+- `drift dispose` — create a disposition for an alert
+- `drift tasks` — list disposition tasks
+- `drift schedule` — view or update the drift check schedule
+
+### Connectors (11 adapters)
+- `connector add` — register a connector
+- `connector list` — list configured connectors
+- `connector sync` — trigger a sync
+- `connector log` — show sync logs
+- `connector health` — run a health check
+
+### Export
+- `export pdf` — generic PDF export (for audit reports use `report audit`)
+- `export csv` — flat CSV with implementations + mappings
+- `export oscal` — OSCAL JSON (component-definition, SSP)
+- `export sig` — SIG questionnaire response workbook
+- `export soa` — ISO 27001 Statement of Applicability workbook
+
+### Assessment & POA&M
+- `assessment create` — create a new assessment
+- `assessment evaluate` — evaluate an assessment against implementations
+- `assessment poam` — generate POA&M items from unmet results
+
+### Organization
+- `org init` — initialize your organization profile
+- `scope create` / `scope list` — manage product/system scopes
+
+### Setup & web
+- `setup` — interactive onboarding wizard
+- `serve` — start the web UI + HTTP API
 
 ## API
 
-The Express API exposes endpoints for all modules:
+The Express API exposes every domain as a REST namespace. Start the server with `attesting serve` and browse:
 
-| Endpoint | Module |
-|----------|--------|
-| `/api/catalogs` | Framework catalogs and controls |
-| `/api/mappings` | Cross-framework control mappings |
+- **`http://localhost:3000/api/docs`** — Swagger UI with all 77 paths documented (OpenAPI 3.1)
+- **`http://localhost:3000/api/docs/openapi.json`** — raw spec
+
+Mounted namespaces:
+
+| Namespace | Domain |
+|---|---|
+| `/api/org` | Organization profile + scopes |
+| `/api/catalogs` | Framework catalogs + controls (FTS) |
+| `/api/mappings` | Cross-framework mappings |
 | `/api/implementations` | Implementation statements |
-| `/api/coverage` | Coverage calculations |
+| `/api/coverage` | Per-catalog coverage aggregates |
 | `/api/governance` | Policies, committees, roles |
 | `/api/risk` | Risk register, matrix, exceptions |
-| `/api/intel` | Threat inputs and manual intel |
-| `/api/drift` | Drift alerts and dispositions |
+| `/api/intel` | Threat inputs + manual intel |
+| `/api/drift` | Drift alerts + dispositions |
 | `/api/assets` | Asset inventory |
-| `/api/connectors` | Integration connector management |
-| `/api/owners` | People and role assignments |
+| `/api/connectors` | Data connectors + adapters |
+| `/api/owners` | Owner/person directory |
 | `/api/audit` | Immutable audit trail |
-| `/api/export` | OSCAL, SIG, CSV, PDF, SOA exports |
-| `/api/diff` | Framework catalog change detection |
+| `/api/export` | CSV/OSCAL/SIG/SOA/PDF export |
+| `/api/diff` | Catalog diff |
+| `/api/scores` | **Compliance scoring (Phase 8A)** |
+| `/api/dashboard/summary` | **Executive dashboard (Phase 8B)** |
+| `/api/reports/audit` | **Audit-ready PDF/DOCX (Phase 8C)** |
+| `/api/monitoring` | **Continuous monitoring (Phase 8D)** |
+| `/api/evidence` | **Evidence lifecycle (Phase 8E)** |
 
-## Export Formats
+Global rate limit: 100 requests / 60 seconds. Errors use a consistent `{ error, code, status, details?, stack? }` envelope.
 
-| Format | Use Case |
-|--------|----------|
-| SIG Response (.xlsm) | Pre-answered questionnaire for customers |
-| OSCAL JSON | Machine-readable (component-definition, SSP, assessment-results, POA&M) |
-| ISO 27001 SOA (.xlsx) | Statement of Applicability |
-| PDF Report | Human-readable compliance summary |
-| CSV | Flat export for Jira, analysis, or other tools |
+## Web UI
 
-## Important: Copyrighted Content
+React 19 + Tailwind + Recharts dashboard, served at `http://localhost:3000/` when `attesting serve` is running. Pages:
 
-Attesting does **not** ship copyrighted framework content (e.g., SIG question text, ISO 27001 control text). The tool imports control text from your own licensed copies. Seed data contains only structural metadata (control IDs, risk domains, mapping references) without proprietary content.
+- **Dashboard** — executive summary with score gauge, per-framework bars, trend, risk posture, drift alerts
+- **Catalogs / Controls** — browse imported frameworks
+- **Implementations** — edit implementation statements
+- **Mappings** — explore cross-framework relationships
+- **Risk** — register, matrix, exceptions
+- **Assets** — inventory + threat correlation
+- **Intel** — threat inputs + manual intel with shadow analysis
+- **Drift** — alert feed + disposition workflow
+- **Connectors** — configure + trigger adapters
+- **Governance** — policies, committees, roles
+- **Evidence** — lifecycle queue with status badges + inline transitions
+- **Exports** — one-click exports + audit report generator
 
-## Docker
+## Configuration
 
-```bash
-docker compose up -d
-# Attesting available at http://localhost:3000
-```
+Attesting stores all state under `~/.attesting/`:
 
-Data persists in a Docker volume (`attesting-data`).
+- `~/.attesting/attesting.db` — the SQLite database (schema + 6 migrations)
+- `~/.attesting/exports/` — generated export files
+- `~/.attesting/reports/` — generated audit reports
+- `~/.attesting/uploads/` — staged import files
 
-## Project Status
+Environment variables:
 
-Active development. Core platform complete:
+- `NODE_ENV` — set to `production` to suppress stack traces in error responses
 
-- **Phase 1** ✅ CLI parity — 22+ commands across risk, intel, drift, connector groups
-- **Phase 2** ✅ Web UI — assets, intel, drift, connectors pages
-- **Phase 3** ✅ Test coverage — 288 tests across 44 files
-- **Phase 4** (partial) ✅ NVD adapter, SBOM ingestion (CycloneDX + SPDX)
-- **Phase 5** ✅ Docker, CI/CD, changelog, security policy
-- **Phase 6** ✅ Proprietary catalog import with file security scanning
+Node ≥20 required.
 
-See [docs/roadmap/ROADMAP.md](docs/roadmap/ROADMAP.md) for the full roadmap.
+## Architecture
+
+**Local-first.** Single SQLite file, no external services required. Schema defined in `src/db/schema.sql` + numbered migrations under `src/db/migrations/` (006 and counting).
+
+**Propagation engine** (`src/services/propagation/`) — every write passes through a dispatcher that routes to entity-specific handlers. Evidence changes trigger score recalculation. Implementation status changes trigger risk recalculation. Handler errors are caught per-handler so one bad cascade can't crash the caller.
+
+**Drift scheduler** (`src/services/drift/scheduler.ts`) — runs 8 periodic checks: evidence staleness (5min), policy reviews (hourly), risk exceptions (hourly), disposition expiry (hourly), manual intel expiry (hourly), posture monitor (hourly), evidence expiry sweep (hourly), full posture recalc (daily).
+
+**Connector adapters** (`src/services/connectors/adapters/`) — each inbound adapter extends `BaseAdapter` with `fetch()` + `transform()`. All HTTP calls go through `fetchWithTimeout` with configurable per-connector timeouts (default 30s). Credentials validated at construction.
+
+## Bundled catalogs
+
+| Catalog | Short name | Source format |
+|---|---|---|
+| NIST SP 800-53 Rev 5 (full) | `nist-800-53-r5` | OSCAL JSON |
+| NIST 800-53 Low baseline | `nist-800-53-r5-low` | OSCAL JSON |
+| NIST 800-53 Moderate baseline | `nist-800-53-r5-moderate` | OSCAL JSON |
+| NIST 800-53 High baseline | `nist-800-53-r5-high` | OSCAL JSON |
+| NIST 800-53 Privacy baseline | `nist-800-53-r5-privacy` | OSCAL JSON |
+| NIST SP 800-171 Rev 3 | `nist-800-171-r3` | OSCAL JSON |
+| NIST Cybersecurity Framework 2.0 | `nist-csf-2.0` | OSCAL JSON |
+| NIST SP 800-218 (SSDF) | `nist-800-218` | OSCAL JSON |
+| CMMC 2.0 Level 2 | `cmmc-2.0` | CSV |
+| ISO/IEC 27001:2022 | *(bring your own)* | CSV |
+| HIPAA Security Rule | `hipaa-security` | CSV |
+| SOC 2 Trust Services Criteria | `soc2-tsc` | CSV |
+| PCI DSS 4.0 | `pci-dss-4` | CSV |
+| GDPR | `gdpr` | CSV |
+| CCPA / CPRA | `ccpa-cpra` | CSV |
+| EU AI Act | `eu-ai-act` | CSV |
+| NISPOM 32 CFR 117 | `nispom-117` | CSV |
+| SIG Lite 2026 | *(bring your own .xlsm)* | SIG XLSM |
+
+Copyrighted framework text (SIG questions, ISO 27001 control bodies) is **not** shipped. Bring your own licensed source file and Attesting imports only the structural metadata.
+
+## Connector adapters (Phase 4)
+
+| Adapter | Connects to | Auth |
+|---|---|---|
+| CISA KEV | Known Exploited Vulnerabilities feed | none (public) |
+| NIST NVD | National Vulnerability Database | optional API key |
+| SBOM CycloneDX | CycloneDX SBOM files | file-based |
+| SBOM SPDX | SPDX SBOM files | file-based |
+| CrowdStrike Falcon | Detections API | OAuth2 client credentials |
+| ServiceNow | Incident / Security Incident table | Basic auth |
+| Jira | Issues via JQL search | Basic auth + API token |
+| Splunk | Search API (async jobs) | Bearer token |
+| Okta | System Log | SSWS API token |
+| Azure AD / Entra ID | Identity Protection risk detections | OAuth2 client credentials |
+| AWS Security Hub | GetFindings (ASFF) | SigV4 |
+| GCP Security Command Center | Findings API | Service-account JWT |
+
+All adapters: fail-fast credential validation on construction, 30s fetch timeout (configurable), 429 Retry-After handling, structured error responses.
 
 ## Contributing
 
-Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, architecture guidelines, and what needs help.
+Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, architecture overview, how to add a connector, and how to add a framework catalog.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+[MIT](LICENSE) © Anthony Rossi III
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.

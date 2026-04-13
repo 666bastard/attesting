@@ -19,6 +19,7 @@ export function registerImplImport(implCommand: Command): void {
     .requiredOption('--file <file>', 'Path to the CSV file')
     .requiredOption('--catalog <shortName>', 'Catalog short name')
     .requiredOption('--scope <name>', 'Scope name')
+    .option('--json', 'Output as JSON')
     .action(runImplImport);
 }
 
@@ -27,6 +28,7 @@ interface ImplImportOptions {
   file: string;
   catalog: string;
   scope: string;
+  json?: boolean;
 }
 
 function runImplImport(options: ImplImportOptions): void {
@@ -156,6 +158,11 @@ function runImplImport(options: ImplImportOptions): void {
   });
 
   runImport();
+
+  if (options.json) {
+    console.log(JSON.stringify({ imported, skipped, errors }, null, 2));
+    return;
+  }
 
   for (const e of errors) {
     error(e);

@@ -19,6 +19,7 @@ export function registerImplAdd(implCommand: Command): void {
     .option('--response <response>', 'SIG response (Yes|No|N/A)')
     .option('--responsible-role <role>', 'Responsible role or team')
     .option('--responsibility <type>', 'Responsibility type (provider|customer|shared|inherited)', 'provider')
+    .option('--json', 'Output as JSON')
     .action(runImplAdd);
 }
 
@@ -30,6 +31,7 @@ interface ImplAddOptions {
   response?: string;
   responsibleRole?: string;
   responsibility: string;
+  json?: boolean;
 }
 
 function runImplAdd(options: ImplAddOptions): void {
@@ -107,6 +109,18 @@ function runImplAdd(options: ImplAddOptions): void {
       timestamp,
       timestamp
     );
+
+  if (options.json) {
+    console.log(JSON.stringify({
+      id,
+      org_id: org.id,
+      scope_id: scopeId,
+      control: options.control,
+      status: options.status,
+      created_at: timestamp,
+    }, null, 2));
+    return;
+  }
 
   success(`Implementation added for ${options.control}`);
 }

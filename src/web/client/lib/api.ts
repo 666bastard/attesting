@@ -167,3 +167,170 @@ export const getAdapters = () => request<string[]>('/connectors/adapters');
 
 // Owners (shared)
 export const getOwners = () => request<any[]>('/owners');
+
+// Dashboard (Phase 8B)
+export interface DashboardSummary {
+  scope: { ref: string; id: string | null };
+  compliance: {
+    overall_score: number;
+    catalog_count: number;
+    best_catalog: FrameworkScore | null;
+    worst_catalog: FrameworkScore | null;
+  };
+  frameworks: FrameworkScore[];
+  trend: {
+    catalog_id: string | null;
+    since_days: number;
+    points: Array<{ calculated_at: string; overall_score: number }>;
+  };
+  coverage: {
+    total_controls: number;
+    implemented: number;
+    partial: number;
+    planned: number;
+    alternative: number;
+    not_implemented: number;
+    not_applicable: number;
+    effective_total: number;
+    implemented_pct: number;
+  };
+  risk: {
+    total_open: number;
+    above_appetite: number;
+    by_severity: Array<{ severity: string; count: number }>;
+    top: Array<{ risk_id: string; title: string; inherent_risk_score: number; residual_risk_score: number | null; owner: string; status: string }>;
+  };
+  drift: {
+    active: number;
+    by_severity: Array<{ severity: string; count: number }>;
+    pending_dispositions: number;
+    recent: Array<{ id: string; alert_type: string; severity: string; title: string; created_at: string }>;
+  };
+  evidence: {
+    total: number;
+    fresh: number;
+    stale: number;
+    expiring_soon: number;
+    fresh_pct: number;
+  };
+  poam: {
+    total_open: number;
+    by_priority: Array<{ priority: string; count: number }>;
+    overdue: number;
+  };
+  generated_at: string;
+}
+export interface FrameworkScore {
+  catalog_id: string;
+  catalog_short_name: string | null;
+  catalog_name: string | null;
+  overall_score: number;
+  coverage_score: number | null;
+  evidence_score: number | null;
+  assessment_score: number | null;
+  total_controls: number;
+  implemented_count: number;
+}
+export const getDashboardSummary = (scope?: string, catalog?: string, trendDays?: number) => {
+  const qs = new URLSearchParams();
+  if (scope) qs.set('scope', scope);
+  if (catalog) qs.set('catalog', catalog);
+  if (trendDays) qs.set('trendDays', String(trendDays));
+  const suffix = qs.toString() ? `?${qs.toString()}` : '';
+  return request<DashboardSummary>(`/dashboard/summary${suffix}`);
+};
+
+// Evidence lifecycle (Phase 8E)
+export type EvidenceStatus = 'draft' | 'submitted' | 'reviewed' | 'accepted' | 'rejected' | 'expiring' | 'expired' | 'archived';
+export type EvidenceAction = 'submit' | 'review' | 'accept' | 'reject' | 'revise' | 'renew' | 'archive';
+export type EvidenceFreshness = 'fresh' | 'expiring_soon' | 'expired' | 'pending' | 'rejected' | 'archived';
+
+export interface EvidenceRow {
+  id: string;
+  title: string;
+  description?: string;
+  status: EvidenceStatus;
+  freshness?: EvidenceFreshness;
+  version: number;
+  implementation_id?: string;
+  evidence_type: string;
+  collected_at?: string;
+  collected_by?: string;
+  valid_from?: string | null;
+  valid_until?: string | null;
+  renewal_period_days?: number | null;
+  reviewer_id?: string | null;
+  reviewed_at?: string | null;
+  review_notes?: string | null;
+  last_state_change_at?: string | null;
+  created_at: string;
+}
+
+export interface EvidenceFreshnessSummary {
+  overall: { fresh: number; expiring_soon: number; expired: number; pending: number; rejected: number; archived: number };
+  by_catalog: Array<{
+    catalog_id: string;
+    catalog_short_name: string;
+    fresh: number; expiring_soon: number; expired: number; pending: number; rejected: number; archived: number;
+    total: number;
+    controls_with_evidence: number;
+    controls_missing_evidence: number;
+    total_controls: number;
+  }>;
+  generated_at: string;
+}
+
+export const listEvidence = (filters?: { status?: string; implementation_id?: string; expiring_within_days?: number }) => {
+  const qs = new URLSearchParams();
+  if (filters?.status) qs.set('status', filters.status);
+  if (filters?.implementation_id) qs.set('implementation_id', filters.implementation_id);
+  if (filters?.expiring_within_days) qs.set('expiring_within_days', String(filters.expiring_within_days));
+  const suffix = qs.toString() ? `?${qs.toString()}` : '';
+  return request<EvidenceRow[]>(`/evidence${suffix}`);
+};
+export const getEvidenceDetail = (id: string) =>
+  request<EvidenceRow & { history: any[] }>(`/evidence/${id}`);
+export const transitionEvidence = (id: string, body: { action: EvidenceAction; reviewer_id?: string; notes?: string; renewal_period_days?: number }) =>
+  request<EvidenceRow>(`/evidence/${id}/transition`, { method: 'POST', body: JSON.stringify(body) });
+export const getEvidenceFreshness = () =>
+  request<EvidenceFreshnessSummary>('/evidence/freshness');
+
+// Monitoring (Phase 8D)
+export interface PostureFinding {
+  scope_id: string | null;
+  catalog_id: string;
+  catalog_short_name: string | null;
+  current_score: number;
+  previous_score: number | null;
+  threshold_breached: boolean;
+  threshold_severity: string | null;
+  threshold_kind: 'critical' | 'warning' | null;
+  delta: number | null;
+  delta_breached: boolean;
+  delta_severity: string | null;
+  consecutive_drops: number;
+  trend_breached: boolean;
+  alert_ids: string[];
+}
+export interface MonitoringStatus {
+  generated_at: string;
+  summary: {
+    total_checked: number;
+    threshold_breaches: number;
+    delta_breaches: number;
+    trend_breaches: number;
+    declining: number;
+  };
+  findings: PostureFinding[];
+  recent_alerts: Array<{ id: string; severity: string; title: string; message: string; created_at: string; resolved_at: string | null }>;
+}
+export const getMonitoringStatus = () => request<MonitoringStatus>('/monitoring/status');
+export const runMonitoringCheck = () => request<any>('/monitoring/run', { method: 'POST' });
+
+// Scores (Phase 8A)
+export const getScoreHistory = (scopeRef: string, catalogRef: string, days = 90) =>
+  request<{ entries: Array<{ calculated_at: string; overall_score: number }>; since_days: number }>(
+    `/scores/${encodeURIComponent(scopeRef)}/${encodeURIComponent(catalogRef)}/history?days=${days}`,
+  );
+export const snapshotScore = (scopeRef: string, catalogRef: string) =>
+  request<any>(`/scores/${encodeURIComponent(scopeRef)}/${encodeURIComponent(catalogRef)}/snapshot`, { method: 'POST' });

@@ -17,15 +17,17 @@ describe('DriftScheduler', () => {
     scheduler.stop();
   });
 
-  it('listChecks returns 6 check names', () => {
+  it('listChecks returns 8 check names', () => {
     const checks = scheduler.listChecks();
-    expect(checks).toHaveLength(6);
+    expect(checks).toHaveLength(8);
     expect(checks).toContain('evidence_staleness');
     expect(checks).toContain('policy_reviews');
     expect(checks).toContain('risk_exceptions');
     expect(checks).toContain('disposition_expiry');
     expect(checks).toContain('manual_intel_expiry');
     expect(checks).toContain('posture_recalc');
+    expect(checks).toContain('posture_monitor');
+    expect(checks).toContain('evidence_expiry_sweep');
   });
 
   it('runOnce executes evidence_staleness check without error', () => {

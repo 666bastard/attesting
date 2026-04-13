@@ -3,7 +3,12 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import * as path from 'path';
 import * as fs from 'fs';
+import { fileURLToPath } from 'url';
 import { db } from '../db/connection.js';
+
+// ESM-compatible __dirname shim
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import { catalogRoutes } from './routes/catalogs.js';
 import { mappingRoutes } from './routes/mappings.js';
 import { implementationRoutes } from './routes/implementations.js';
@@ -22,6 +27,14 @@ import { ownerRoutes } from './routes/owners.js';
 import { auditRoutes } from './routes/audit.js';
 import { importRoutes } from './routes/import.js';
 import { onboardingRoutes } from './routes/onboarding.js';
+import { scoresRoutes } from './routes/scores.js';
+import { dashboardRoutes } from './routes/dashboard.js';
+import { monitoringRoutes } from './routes/monitoring.js';
+import { evidenceRoutes } from './routes/evidence.js';
+import { reportsRoutes } from './routes/reports.js';
+import { errorHandler } from './middleware/error-handler.js';
+import swaggerUi from 'swagger-ui-express';
+import { buildOpenApiSpec } from './openapi.js';
 
 export interface ServerOptions {
   port: number;
@@ -75,22 +88,31 @@ export function createApp() {
   app.use('/api/audit', auditRoutes());
   app.use('/api/import', importRoutes());
   app.use('/api/onboarding', onboardingRoutes());
+  app.use('/api/scores', scoresRoutes());
+  app.use('/api/dashboard', dashboardRoutes());
+  app.use('/api/monitoring', monitoringRoutes());
+  app.use('/api/evidence', evidenceRoutes());
+  app.use('/api/reports', reportsRoutes());
 
-  // OpenAPI spec
-  app.get('/api/docs/openapi.yaml', (_req, res) => {
-    const yamlPath = path.join(__dirname, 'openapi.yaml');
-    if (fs.existsSync(yamlPath)) {
-      res.type('text/yaml').sendFile(yamlPath);
-    } else {
-      // Fallback: look relative to source
-      const srcPath = path.join(__dirname, '../../src/web/openapi.yaml');
-      if (fs.existsSync(srcPath)) {
-        res.type('text/yaml').sendFile(srcPath);
-      } else {
-        res.status(404).json({ error: 'OpenAPI spec not found' });
-      }
-    }
+  // ── OpenAPI 3.1 spec + Swagger UI (Phase 5J) ────────────
+  // The spec is built from package.json version so docs stay in sync.
+  const openApiSpec = buildOpenApiSpec(resolvePackageVersion());
+
+  app.get('/api/docs/openapi.json', (_req, res) => {
+    res.type('application/json').json(openApiSpec);
   });
+
+  app.use(
+    '/api/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(openApiSpec, {
+      customSiteTitle: 'Attesting API',
+      customCss: '.topbar { display: none; }',
+    }),
+  );
+
+  // Terminal error middleware — must be registered LAST.
+  app.use(errorHandler);
 
   return app;
 }
@@ -119,6 +141,23 @@ export function startServer(options: ServerOptions): void {
       console.log(`  UI:  Start Vite dev server separately — npx vite --config vite.web.config.ts`);
     }
   });
+}
+
+function resolvePackageVersion(): string {
+  try {
+    const candidates = [
+      path.join(__dirname, '..', '..', 'package.json'),
+      path.join(__dirname, '..', '..', '..', 'package.json'),
+      path.join(process.cwd(), 'package.json'),
+    ];
+    for (const p of candidates) {
+      if (fs.existsSync(p)) {
+        const pkg = JSON.parse(fs.readFileSync(p, 'utf-8'));
+        if (pkg.name === 'attesting' && typeof pkg.version === 'string') return pkg.version;
+      }
+    }
+  } catch { /* fall through */ }
+  return '0.0.0';
 }
 
 function resolveStaticDir(): string | null {

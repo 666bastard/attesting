@@ -27,6 +27,7 @@ export function registerCatalogUpdate(catalogCommand: Command): void {
     .option('--scope <name>', 'Scope name for implementation migration')
     .option('--columns <mapping>', 'Column mapping for CSV format')
     .option('--scope-level <level>', 'SIG scope level filter')
+    .option('--json', 'Output as JSON')
     .action(runCatalogUpdate);
 }
 
@@ -35,6 +36,7 @@ interface CatalogUpdateOptions {
   newFile: string;
   format: string;
   newShortName: string;
+  json?: boolean;
   newName: string;
   publisher?: string;
   version?: string;
@@ -157,6 +159,17 @@ async function runCatalogUpdate(options: CatalogUpdateOptions): Promise<void> {
   }
   if (diff.summary.added > 0) {
     warn(`${diff.summary.added} new controls have no implementation.`);
+  }
+
+  if (options.json) {
+    console.log(JSON.stringify({
+      old_catalog: options.old,
+      new_catalog: options.newShortName,
+      imported: importCount,
+      migration: migrationResult,
+      summary: diff.summary,
+    }, null, 2));
+    return;
   }
 
   success('Catalog update complete.');

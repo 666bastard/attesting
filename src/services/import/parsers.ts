@@ -1,4 +1,9 @@
+import { createRequire } from 'module';
 import type { ImportFormat } from './detect-format.js';
+
+// ESM shim: lets sync functions below call `require('xlsx')` / `require('fs')`
+// lazily without converting them to async dynamic imports.
+const require = createRequire(import.meta.url);
 
 export interface ImportPreviewControl {
   control_id: string;

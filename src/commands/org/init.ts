@@ -15,6 +15,7 @@ export function registerOrgInit(orgCommand: Command): void {
     .requiredOption('--name <name>', 'Organization name')
     .option('--cage-code <code>', 'DoD CAGE code (optional)')
     .option('--description <desc>', 'Organization description (optional)')
+    .option('--json', 'Output as JSON')
     .action(runOrgInit);
 }
 
@@ -22,6 +23,7 @@ interface OrgInitOptions {
   name: string;
   cageCode?: string;
   description?: string;
+  json?: boolean;
 }
 
 function runOrgInit(options: OrgInitOptions): void {
@@ -55,6 +57,17 @@ function runOrgInit(options: OrgInitOptions): void {
       timestamp,
       timestamp
     );
+
+  if (options.json) {
+    console.log(JSON.stringify({
+      id,
+      name: options.name,
+      description: options.description ?? null,
+      cage_code: options.cageCode ?? null,
+      created_at: timestamp,
+    }, null, 2));
+    return;
+  }
 
   success(`Organization initialized: ${options.name}`);
 }

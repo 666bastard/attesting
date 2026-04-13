@@ -50,6 +50,7 @@ export function registerMappingCreate(mappingCommand: Command): void {
     .option('--relationship <rel>', 'Relationship type (equivalent|subset|superset|related|intersects)', 'equivalent')
     .option('--confidence <conf>', 'Confidence level (high|medium|low)', 'high')
     .option('--notes <text>', 'Explanation of the mapping relationship')
+    .option('--json', 'Output as JSON')
     .action(runMappingCreate);
 }
 
@@ -59,6 +60,7 @@ interface MappingCreateOptions {
   relationship: string;
   confidence: string;
   notes?: string;
+  json?: boolean;
 }
 
 function runMappingCreate(options: MappingCreateOptions): void {
@@ -115,6 +117,19 @@ function runMappingCreate(options: MappingCreateOptions): void {
       error(`Failed to create mapping: ${msg}`);
     }
     process.exit(1);
+  }
+
+  if (options.json) {
+    console.log(JSON.stringify({
+      id,
+      source: options.source,
+      target: options.target,
+      relationship: options.relationship,
+      confidence: options.confidence,
+      notes: options.notes ?? null,
+      created_at: timestamp,
+    }, null, 2));
+    return;
   }
 
   success(`Mapping created: ${options.source} -> ${options.target} (${options.relationship}, ${options.confidence})`);

@@ -18,6 +18,7 @@ const AssetsPage = lazy(() => import('./components/assets/AssetsPage'));
 const IntelPage = lazy(() => import('./components/intel/IntelPage'));
 const DriftPage = lazy(() => import('./components/drift/DriftPage'));
 const ConnectorsPage = lazy(() => import('./components/connectors/ConnectorsPage'));
+const EvidencePage = lazy(() => import('./components/evidence/EvidencePage'));
 const SetupWizard = lazy(() => import('./components/onboarding/SetupWizard'));
 
 interface ToastCtx { add: (msg: string, type?: 'success' | 'error') => void }
@@ -87,6 +88,7 @@ export default function App() {
                   <Route path="/intel/*" element={<IntelPage />} />
                   <Route path="/drift/*" element={<DriftPage />} />
                   <Route path="/connectors" element={<ConnectorsPage />} />
+                  <Route path="/evidence" element={<EvidencePage />} />
                   <Route path="/diff" element={<DiffViewer />} />
                   <Route path="/import" element={<ImportProprietary />} />
                   <Route path="/export" element={<ExportCenter scope={scope} />} />

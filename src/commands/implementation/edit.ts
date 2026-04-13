@@ -15,6 +15,7 @@ export function registerImplEdit(implCommand: Command): void {
     .option('--status <status>', 'New implementation status')
     .option('--statement <text>', 'New implementation narrative')
     .option('--response <response>', 'New SIG response (Yes|No|N/A)')
+    .option('--json', 'Output as JSON')
     .action(runImplEdit);
 }
 
@@ -23,6 +24,7 @@ interface ImplEditOptions {
   status?: string;
   statement?: string;
   response?: string;
+  json?: boolean;
 }
 
 function runImplEdit(ref: string, options: ImplEditOptions): void {
@@ -131,6 +133,11 @@ function runImplEdit(ref: string, options: ImplEditOptions): void {
       `UPDATE implementations SET ${setClauses.join(', ')} WHERE id = ?`
     )
     .run(...params);
+
+  if (options.json) {
+    console.log(JSON.stringify({ id: implId, control: ref, updated_fields: setClauses.length - 1 }, null, 2));
+    return;
+  }
 
   success(`Implementation updated for ${ref}`);
 }

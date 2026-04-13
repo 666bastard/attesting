@@ -18,6 +18,7 @@ export function registerMappingImport(mappingCommand: Command): void {
     .requiredOption('--file <file>', 'Path to the CSV file')
     .requiredOption('--source-catalog <shortName>', 'Source catalog short name')
     .requiredOption('--target-catalog <shortName>', 'Target catalog short name')
+    .option('--json', 'Output as JSON')
     .action(runMappingImport);
 }
 
@@ -26,6 +27,7 @@ interface MappingImportOptions {
   file: string;
   sourceCatalog: string;
   targetCatalog: string;
+  json?: boolean;
 }
 
 function runMappingImport(options: MappingImportOptions): void {
@@ -138,6 +140,11 @@ function runMappingImport(options: MappingImportOptions): void {
   });
 
   runImport();
+
+  if (options.json) {
+    console.log(JSON.stringify({ imported, skipped, errors }, null, 2));
+    return;
+  }
 
   for (const e of errors) {
     error(e);

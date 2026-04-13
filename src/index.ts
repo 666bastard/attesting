@@ -7,7 +7,33 @@ process.stdout.on('error', (err: NodeJS.ErrnoException) => {
 });
 
 import { Command } from 'commander';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 import { registerOrgInit } from './commands/org/init.js';
+
+/**
+ * Reads the version from the nearest package.json so `--version` always
+ * reflects the installed package rather than a hardcoded literal.
+ */
+function readPackageVersion(): string {
+  try {
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    // When installed: dist/index.js → ../package.json
+    // When running via tsx: src/index.ts → ../package.json
+    const candidates = [
+      path.join(here, '..', 'package.json'),
+      path.join(here, '..', '..', 'package.json'),
+    ];
+    for (const p of candidates) {
+      if (fs.existsSync(p)) {
+        const pkg = JSON.parse(fs.readFileSync(p, 'utf-8'));
+        if (pkg.name === 'attesting' && typeof pkg.version === 'string') return pkg.version;
+      }
+    }
+  } catch { /* fall through */ }
+  return '0.0.0';
+}
 import { registerScopeCommands } from './commands/org/scope.js';
 import { registerCatalogImport } from './commands/catalog/import.js';
 import { registerCatalogList } from './commands/catalog/list.js';
@@ -39,6 +65,10 @@ import { registerAssessmentPoam } from './commands/assessment/poam.js';
 import { registerServe } from './commands/web/serve.js';
 import { registerSetup } from './commands/setup/wizard.js';
 import { registerRiskCommands } from './commands/risk/index.js';
+import { registerScoreCommands } from './commands/score/index.js';
+import { registerMonitorCommands } from './commands/monitor/index.js';
+import { registerEvidenceCommands } from './commands/evidence/index.js';
+import { registerReportCommands } from './commands/report/index.js';
 import { registerIntelCommands } from './commands/intel/index.js';
 import { registerDriftCommands } from './commands/drift/index.js';
 import { registerConnectorCommands } from './commands/connector/index.js';
@@ -48,7 +78,7 @@ const program = new Command();
 program
   .name('attesting')
   .description('OSCAL-native compliance control platform')
-  .version('0.1.0');
+  .version(readPackageVersion());
 
 // ---------------------------------------------------------------
 // org commands
@@ -135,6 +165,26 @@ registerAssessmentPoam(assessmentCommand);
 // risk commands
 // ---------------------------------------------------------------
 registerRiskCommands(program);
+
+// ---------------------------------------------------------------
+// score commands
+// ---------------------------------------------------------------
+registerScoreCommands(program);
+
+// ---------------------------------------------------------------
+// monitor commands
+// ---------------------------------------------------------------
+registerMonitorCommands(program);
+
+// ---------------------------------------------------------------
+// evidence commands
+// ---------------------------------------------------------------
+registerEvidenceCommands(program);
+
+// ---------------------------------------------------------------
+// report commands
+// ---------------------------------------------------------------
+registerReportCommands(program);
 
 // ---------------------------------------------------------------
 // intel commands

@@ -11,11 +11,13 @@ export function registerMappingResolve(mappingCommand: Command): void {
     .command('resolve <ref>')
     .description('Resolve all mapped equivalents for a control (format: catalog:control_id)')
     .option('--depth <n>', 'Maximum traversal depth (1=direct only, 2=one transitive hop)', '2')
+    .option('--json', 'Output as JSON')
     .action(runMappingResolve);
 }
 
 interface MappingResolveOptions {
   depth: string;
+  json?: boolean;
 }
 
 function runMappingResolve(ref: string, options: MappingResolveOptions): void {
@@ -54,6 +56,11 @@ function runMappingResolve(ref: string, options: MappingResolveOptions): void {
 
   const maxDepth = parseInt(options.depth, 10) || 2;
   const mappings = resolveControl(row.id, database, maxDepth);
+
+  if (options.json) {
+    console.log(JSON.stringify({ ref, mappings }, null, 2));
+    return;
+  }
 
   if (mappings.length === 0) {
     log(`No mappings found for ${ref}`);

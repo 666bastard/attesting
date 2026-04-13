@@ -39,11 +39,13 @@ export function registerCatalogWatch(catalogCommand: Command): void {
   watchCommand
     .command('list')
     .description('List all watched catalog sources')
+    .option('--json', 'Output as JSON')
     .action(runWatchList);
 
   watchCommand
     .command('check')
     .description('Check all watched sources for updates')
+    .option('--json', 'Output as JSON')
     .action(runWatchCheck);
 
   watchCommand
@@ -53,11 +55,13 @@ export function registerCatalogWatch(catalogCommand: Command): void {
     .requiredOption('--catalog <shortName>', 'Associated catalog short name')
     .option('--format <format>', 'Source format (oscal|csv)', 'oscal')
     .option('--auto-download', 'Automatically download when changes detected')
+    .option('--json', 'Output as JSON')
     .action(runWatchAdd);
 
   watchCommand
     .command('seed')
     .description('Pre-seed watch list with known NIST OSCAL sources')
+    .option('--json', 'Output as JSON')
     .action(runWatchSeed);
 }
 
@@ -96,13 +100,18 @@ interface WatchRow {
   auto_download: number;
 }
 
-function runWatchList(): void {
+function runWatchList(options: { json?: boolean } = {}): void {
   const database = db.getDb();
   ensureWatchTable(database);
 
   const rows = database
     .prepare('SELECT * FROM catalog_watches ORDER BY catalog_short_name')
     .all() as WatchRow[];
+
+  if (options.json) {
+    console.log(JSON.stringify(rows, null, 2));
+    return;
+  }
 
   if (rows.length === 0) {
     warn('No watched sources. Run `attesting catalog watch seed` to add known NIST sources.');
@@ -131,7 +140,7 @@ function runWatchList(): void {
 // watch check
 // ---------------------------------------------------------------------------
 
-async function runWatchCheck(): Promise<void> {
+async function runWatchCheck(options: { json?: boolean } = {}): Promise<void> {
   const database = db.getDb();
   ensureWatchTable(database);
 
@@ -140,18 +149,20 @@ async function runWatchCheck(): Promise<void> {
     .all() as WatchRow[];
 
   if (rows.length === 0) {
+    if (options.json) { console.log(JSON.stringify({ checked: 0, changed: 0, errors: 0, results: [] }, null, 2)); return; }
     warn('No watched sources. Run `attesting catalog watch seed` to add known sources.');
     return;
   }
 
-  info(`Checking ${rows.length} watched source(s)…`);
+  if (!options.json) info(`Checking ${rows.length} watched source(s)…`);
   log('');
 
   let changedCount = 0;
   let errorCount = 0;
+  const results: Array<{ catalog: string; status: string; hash?: string; error?: string }> = [];
 
   for (const row of rows) {
-    process.stdout.write(`  Checking ${row.catalog_short_name}… `);
+    if (!options.json) process.stdout.write(`  Checking ${row.catalog_short_name}… `);
 
     try {
       const content = await fetchUrl(row.source_url);
@@ -159,9 +170,11 @@ async function runWatchCheck(): Promise<void> {
       const timestamp = now();
 
       if (row.last_hash && row.last_hash === hash) {
-        log('no changes');
+        results.push({ catalog: row.catalog_short_name, status: 'unchanged', hash });
+        if (!options.json) log('no changes');
       } else if (!row.last_hash) {
-        log(`baseline set (hash: ${hash.slice(0, 16)}…)`);
+        results.push({ catalog: row.catalog_short_name, status: 'baseline', hash });
+        if (!options.json) log(`baseline set (hash: ${hash.slice(0, 16)}…)`);
         database
           .prepare(
             'UPDATE catalog_watches SET last_hash = ?, last_checked_at = ?, last_changed_at = ? WHERE id = ?'
@@ -169,9 +182,12 @@ async function runWatchCheck(): Promise<void> {
           .run(hash, timestamp, timestamp, row.id);
       } else {
         changedCount++;
-        log(`CHANGED (old: ${row.last_hash.slice(0, 8)}… → new: ${hash.slice(0, 8)}…)`);
-        warn(`  ⚡ ${row.catalog_short_name} has been updated upstream!`);
-        info(`     Re-import with: attesting catalog update --old ${row.catalog_short_name} --new-file <downloaded-file> --format ${row.source_format} …`);
+        results.push({ catalog: row.catalog_short_name, status: 'changed', hash });
+        if (!options.json) {
+          log(`CHANGED (old: ${row.last_hash.slice(0, 8)}… → new: ${hash.slice(0, 8)}…)`);
+          warn(`  ⚡ ${row.catalog_short_name} has been updated upstream!`);
+          info(`     Re-import with: attesting catalog update --old ${row.catalog_short_name} --new-file <downloaded-file> --format ${row.source_format} …`);
+        }
 
         database
           .prepare(
@@ -187,8 +203,14 @@ async function runWatchCheck(): Promise<void> {
     } catch (err) {
       errorCount++;
       const msg = err instanceof Error ? err.message : String(err);
-      log(`ERROR: ${msg}`);
+      results.push({ catalog: row.catalog_short_name, status: 'error', error: msg });
+      if (!options.json) log(`ERROR: ${msg}`);
     }
+  }
+
+  if (options.json) {
+    console.log(JSON.stringify({ checked: rows.length, changed: changedCount, errors: errorCount, results }, null, 2));
+    return;
   }
 
   log('');
@@ -211,6 +233,7 @@ interface WatchAddOptions {
   catalog: string;
   format: string;
   autoDownload?: boolean;
+  json?: boolean;
 }
 
 function runWatchAdd(options: WatchAddOptions): void {
@@ -234,6 +257,11 @@ function runWatchAdd(options: WatchAddOptions): void {
     .run(generateUuid(), options.catalog, options.url, options.format,
       options.autoDownload ? 1 : 0, now());
 
+  if (options.json) {
+    console.log(JSON.stringify({ catalog: options.catalog, url: options.url, format: options.format }, null, 2));
+    return;
+  }
+
   success(`Added watch for ${options.catalog}: ${options.url}`);
 }
 
@@ -241,7 +269,7 @@ function runWatchAdd(options: WatchAddOptions): void {
 // watch seed
 // ---------------------------------------------------------------------------
 
-function runWatchSeed(): void {
+function runWatchSeed(options: { json?: boolean } = {}): void {
   const database = db.getDb();
   ensureWatchTable(database);
 
@@ -259,6 +287,11 @@ function runWatchSeed(): void {
       )
       .run(generateUuid(), src.shortName, src.url, src.format, now());
     added++;
+  }
+
+  if (options.json) {
+    console.log(JSON.stringify({ added, total_known: KNOWN_SOURCES.length }, null, 2));
+    return;
   }
 
   if (added > 0) {

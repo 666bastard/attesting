@@ -8,6 +8,8 @@ import {
   checkManualIntelExpiry,
   fullPostureRecalculation,
 } from './checks.js';
+import { runPostureMonitor } from '../monitoring/posture-monitor.js';
+import { sweepExpiry } from '../evidence/freshness.js';
 
 type CheckFn = () => unknown;
 
@@ -35,6 +37,8 @@ export class DriftScheduler {
     this.schedule('disposition_expiry',   () => checkDispositionExpiry(this.db),    60 * 60_000);
     this.schedule('manual_intel_expiry',  () => checkManualIntelExpiry(this.db),    60 * 60_000);
     this.schedule('posture_recalc',       () => fullPostureRecalculation(this.db),  24 * 60 * 60_000);
+    this.schedule('posture_monitor',      () => runPostureMonitor(this.db),         60 * 60_000);
+    this.schedule('evidence_expiry_sweep',() => sweepExpiry(this.db),                60 * 60_000);
 
     success(`Drift scheduler started with ${this.intervals.size} checks`);
   }
@@ -55,6 +59,8 @@ export class DriftScheduler {
       disposition_expiry:  () => checkDispositionExpiry(this.db),
       manual_intel_expiry: () => checkManualIntelExpiry(this.db),
       posture_recalc:      () => fullPostureRecalculation(this.db),
+      posture_monitor:     () => runPostureMonitor(this.db),
+      evidence_expiry_sweep: () => sweepExpiry(this.db),
     };
     const fn = checks[name];
     if (!fn) throw new Error(`Unknown check: ${name}. Available: ${Object.keys(checks).join(', ')}`);
@@ -66,6 +72,7 @@ export class DriftScheduler {
     return [
       'evidence_staleness', 'policy_reviews', 'risk_exceptions',
       'disposition_expiry', 'manual_intel_expiry', 'posture_recalc',
+      'posture_monitor', 'evidence_expiry_sweep',
     ];
   }
 

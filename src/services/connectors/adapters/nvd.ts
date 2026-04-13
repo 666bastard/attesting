@@ -1,5 +1,6 @@
 import type Database from 'better-sqlite3';
 import { BaseAdapter } from '../base-adapter.js';
+import { fetchWithTimeout } from '../utils/fetch-with-timeout.js';
 import { checkAutoCorroboration } from '../../intel/auto-corroboration.js';
 
 const NVD_API = 'https://services.nvd.nist.gov/rest/json/cves/2.0';
@@ -48,7 +49,12 @@ export class NVDAdapter extends BaseAdapter {
         headers['apiKey'] = this.config.api_key;
       }
 
-      const res = await fetch(url, { headers });
+      const res = await fetchWithTimeout(url, { headers, timeoutMs: this.timeoutMs(), adapter: 'NVD' });
+      if (res.status === 429) {
+        const retryAfter = Number(res.headers.get('Retry-After') ?? 6);
+        await new Promise(r => setTimeout(r, Math.min(retryAfter, 60) * 1000));
+        continue;
+      }
       if (!res.ok) throw new Error(`NVD API error: ${res.status} ${res.statusText}`);
 
       const data: any = await res.json();

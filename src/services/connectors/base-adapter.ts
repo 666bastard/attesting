@@ -1,6 +1,7 @@
 import type Database from 'better-sqlite3';
 import type { SyncStats } from '../../models/connector.js';
 import { generateUuid } from '../../utils/uuid.js';
+import { DEFAULT_TIMEOUT_MS } from './utils/fetch-with-timeout.js';
 
 /**
  * Abstract base class for all external system connectors.
@@ -19,6 +20,16 @@ export abstract class BaseAdapter {
     this.db = db;
     this.connectorId = connectorId;
     this.config = config;
+  }
+
+  /**
+   * Phase 5H — timeout resolution used by all adapter fetch calls.
+   * Config override: `timeout_ms` (number). Defaults to 30s.
+   * Subclasses should pass `this.timeoutMs()` into fetchWithTimeout.
+   */
+  protected timeoutMs(): number {
+    const n = Number(this.config.timeout_ms);
+    return Number.isFinite(n) && n > 0 ? n : DEFAULT_TIMEOUT_MS;
   }
 
   /** Fetch records from the external system. */
