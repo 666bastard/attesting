@@ -8,6 +8,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+// ESM-compatible __dirname shim (package is "type": "module" since Phase 5I)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const CATALOG_DIR = path.join(__dirname, '../data/catalogs');
 
