@@ -1,0 +1,90 @@
+name: Release
+
+# Phase 5M — Tag-triggered npm publish + GitHub Release.
+#
+# To cut a release:
+#   1. Update CHANGELOG.md with the new version entry.
+#   2. Bump "version" in package.json.
+#   3. Commit both: `git commit -m "chore: release vX.Y.Z"`
+#   4. Tag: `git tag vX.Y.Z && git push origin main --tags`
+#
+# This workflow fires on the tag push, runs the full build + test suite
+# against the tagged ref, publishes to npm using NPM_TOKEN, and creates
+# a GitHub Release with auto-generated notes.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required to create the GitHub Release
+      id-token: write   # required for npm provenance
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify tag matches package.json version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "Tag:    v$TAG_VERSION"
+          echo "Pkg:    $PKG_VERSION"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag version v$TAG_VERSION does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Typecheck
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Run test suite
+        run: npm test
+
+      - name: Verify npm pack
+        run: |
+          npm pack --dry-run --json > /tmp/pack.json
+          SIZE=$(node -p "JSON.parse(require('fs').readFileSync('/tmp/pack.json','utf-8'))[0].size")
+          if [ "$SIZE" -gt 5242880 ]; then
+            echo "::error::Packed tarball is $SIZE bytes (>5MB)"
+            exit 1
+          fi
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body: |
+            ## Install
+
+            ```bash
+            npm install -g attesting@${{ github.ref_name }}
+            ```
+
+            See [CHANGELOG.md](https://github.com/xtonyknucklesx/attesting/blob/main/CHANGELOG.md) for the full release notes.

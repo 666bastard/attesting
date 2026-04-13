@@ -44,6 +44,21 @@ jobs:
             echo "::warning::package-lock.json may be out of sync"
           fi
 
+      - name: Verify npm pack size
+        if: matrix.node-version == 20
+        run: |
+          npm pack --dry-run --json > /tmp/npm-pack.json
+          SIZE=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/npm-pack.json','utf-8'))[0].size)")
+          UNPACKED=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/npm-pack.json','utf-8'))[0].unpackedSize)")
+          FILES=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/npm-pack.json','utf-8'))[0].entryCount)")
+          echo "Package: ${SIZE} bytes compressed, ${UNPACKED} bytes unpacked, ${FILES} files"
+          # Fail if compressed tarball exceeds 5MB
+          if [ "$SIZE" -gt 5242880 ]; then
+            echo "::error::Packed tarball is $SIZE bytes (>5MB limit). Review the files whitelist in package.json."
+            exit 1
+          fi
+          echo "::notice::Tarball size OK ($((SIZE / 1024 / 1024))MB / 5MB limit)"
+
   # ─── Job 2: Security intelligence ────────────────────────────
   security:
     runs-on: ubuntu-latest
