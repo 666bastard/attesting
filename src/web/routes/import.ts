@@ -50,7 +50,7 @@ export function importRoutes(): Router {
    * POST /api/import/preview
    * Upload a file → scan → parse → return preview.
    */
-  router.post('/preview', upload.single('file'), (req, res) => {
+  router.post('/preview', upload.single('file'), async (req, res) => {
     if (!req.file) {
       res.status(400).json({ error: 'No file uploaded' });
       return;
@@ -76,7 +76,7 @@ export function importRoutes(): Router {
       }
 
       const database = db.getDb();
-      const preview = previewImport(database, req.file.path, req.file.originalname, formatOverride);
+      const preview = await previewImport(database, req.file.path, req.file.originalname, formatOverride);
 
       res.json({
         ...preview,
@@ -94,7 +94,7 @@ export function importRoutes(): Router {
    * POST /api/import/confirm
    * Execute a previously previewed import.
    */
-  router.post('/confirm', (req, res) => {
+  router.post('/confirm', async (req, res) => {
     const { upload_path, original_name, format, overwrite } = req.body;
 
     if (!upload_path || !original_name) {
@@ -130,7 +130,7 @@ export function importRoutes(): Router {
 
     try {
       const database = db.getDb();
-      const result = executeImport(database, resolved, original_name, format as ImportFormat | undefined, overwrite === true);
+      const result = await executeImport(database, resolved, original_name, format as ImportFormat | undefined, overwrite === true);
       try { fs.unlinkSync(resolved); } catch { /* ignore */ }
       res.status(201).json(result);
     } catch (e: any) {

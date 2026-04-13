@@ -74,7 +74,7 @@ async function runImportProprietary(
 
   // Preview
   console.log('\n  Analyzing file...\n');
-  const preview = previewImport(database, filePath, filename, format);
+  const preview = await previewImport(database, filePath, filename, format);
 
   if (preview.warnings.length > 0) {
     for (const w of preview.warnings) {
@@ -133,7 +133,7 @@ async function runImportProprietary(
   }
 
   // Execute
-  const result = executeImport(database, filePath, filename, format, options.overwrite);
+  const result = await executeImport(database, filePath, filename, format, options.overwrite);
 
   if (result.controls_imported === 0 && result.warnings.length > 0) {
     for (const w of result.warnings) error(w);

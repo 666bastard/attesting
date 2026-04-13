@@ -90,8 +90,7 @@
     "recharts": "^3.8.1",
     "swagger-ui-express": "^5.0.1",
     "tailwind-merge": "^3.5.0",
-    "uuid": "^10.0.0",
-    "xlsx": "^0.18.5"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",

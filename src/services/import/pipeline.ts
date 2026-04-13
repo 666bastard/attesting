@@ -43,12 +43,12 @@ export interface ImportResult {
  * Parse a file and return a preview of what would be imported.
  * Does NOT write to the database.
  */
-export function previewImport(
+export async function previewImport(
   db: Database.Database,
   filePath: string,
   filename: string,
   formatOverride?: ImportFormat,
-): ImportPreview {
+): Promise<ImportPreview> {
   const detection = detectFormat(filename);
   const format = formatOverride ?? detection.format;
 
@@ -58,7 +58,7 @@ export function previewImport(
     ]);
   }
 
-  const parsed = parseFile(filePath, format);
+  const parsed = await parseFile(filePath, format);
   if (!parsed) {
     return emptyPreview(detection, [`Failed to parse "${filename}" as ${format}.`]);
   }
@@ -89,16 +89,16 @@ export function previewImport(
 /**
  * Execute a confirmed import. Writes catalog + controls to the database.
  */
-export function executeImport(
+export async function executeImport(
   db: Database.Database,
   filePath: string,
   filename: string,
   formatOverride?: ImportFormat,
   overwrite?: boolean,
-): ImportResult {
+): Promise<ImportResult> {
   const detection = detectFormat(filename);
   const format = formatOverride ?? detection.format;
-  const parsed = parseFile(filePath, format);
+  const parsed = await parseFile(filePath, format);
 
   if (!parsed) {
     return { catalog_id: '', controls_imported: 0, mappings_resolved: 0, warnings: ['Parse failed'] };
