@@ -161,10 +161,13 @@ function resolvePackageVersion(): string {
 }
 
 function resolveStaticDir(): string | null {
+  // Frontend assets live in dist/client/ (produced by vite build).
+  // Backend compiled output lives in dist/ (produced by tsc) — the two
+  // must not collide, or vite's emptyOutDir wipes the tsc output.
   const candidates = [
-    path.join(__dirname, '../../dist/web'),
-    path.join(__dirname, '../../../dist/web'),
-    path.join(process.cwd(), 'dist/web'),
+    path.join(__dirname, '../../dist/client'),
+    path.join(__dirname, '../../../dist/client'),
+    path.join(process.cwd(), 'dist/client'),
   ];
   for (const dir of candidates) {
     if (fs.existsSync(dir)) return dir;

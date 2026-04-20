@@ -7,7 +7,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   root: 'src/web/client',
   build: {
-    outDir: '../../../dist/web',
+    // Must NOT overlap with tsc's dist/web/ output (which contains server.js,
+    // routes/, middleware/, etc.). Previously set to dist/web/ with
+    // emptyOutDir: true, which wiped the tsc output and broke CI.
+    outDir: '../../../dist/client',
     emptyOutDir: true,
   },
   resolve: {

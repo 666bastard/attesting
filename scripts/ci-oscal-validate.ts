@@ -10,10 +10,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { fileURLToPath } from 'url';
 import Database from 'better-sqlite3';
 import { v4 as uuid } from 'uuid';
 import { exportOscalSsp } from '../src/exporters/oscal-json.js';
 import { validateOscalFile } from '../src/validators/oscal.js';
+
+// ESM-compatible __dirname shim (package is "type": "module" since Phase 5I)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const SCHEMA_PATH = path.join(__dirname, '../src/db/schema.sql');
 
