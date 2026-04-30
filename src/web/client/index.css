@@ -206,12 +206,22 @@ body {
 }
 .input-glass::placeholder { color: var(--text-dim); }
 
+/* Native <select> option elements need explicit colors on dark backgrounds */
+select.input-glass option {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
 .light .input-glass {
   background: #ffffff;
   border-color: #e2e8f0;
 }
 .light .input-glass:focus {
   border-color: #6366f1;
+}
+.light select.input-glass option {
+  background: #ffffff;
+  color: #1e293b;
 }
 
 /* ── Table styles on glass ─────────────────────────────────── */
