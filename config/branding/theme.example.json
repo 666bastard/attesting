@@ -1,0 +1,12 @@
+{
+  "$schema": "https://attesting.dev/schemas/theme.json",
+  "$comment": "Organization-specific branding. Place in config/branding/theme.json",
+  "orgName": "Your Organization",
+  "orgId": "your-org",
+  "primaryColor": "#3B82F6",
+  "accentColor": "#10B981",
+  "headerText": "Compliance Program",
+  "footerText": "",
+  "logoPath": "./config/branding/logo.svg",
+  "favicon": null
+}

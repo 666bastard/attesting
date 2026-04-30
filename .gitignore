@@ -17,6 +17,13 @@ data/exports/
 *nutanix*
 *customer*
 
+# ── Org-specific deployment config ───────────────────────────
+# The config/ directory holds credentials, branding, and custom catalogs.
+# Only config/README.md is committed (as a template).
+config/branding/
+config/connectors/
+config/catalogs/
+
 # Environment
 .env
 .env.local
