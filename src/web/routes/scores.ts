@@ -133,9 +133,10 @@ function resolveCatalog(database: any, catalogRef: string): string | null {
 
 function snapshotAllCatalogs(database: any, scopeId: string | null) {
   const catalogs = database.prepare('SELECT id FROM catalogs').all() as Array<{ id: string }>;
-  return catalogs.map((c) =>
-    snapshotScore(database, c.id, scopeId, { trigger: 'manual' }),
-  );
+  for (const c of catalogs) {
+    snapshotScore(database, c.id, scopeId, { trigger: 'manual' });
+  }
+  return getScoresForScope(database, scopeId);
 }
 
 function parsePositiveInt(v: any, def: number): number {

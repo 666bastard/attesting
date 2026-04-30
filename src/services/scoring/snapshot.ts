@@ -23,6 +23,12 @@ export interface SnapshotOptions {
   weights?: ScoringWeights;
 }
 
+/** ComplianceScore enriched with the joined catalog identifiers. */
+export interface ComplianceScoreWithCatalog extends ComplianceScore {
+  catalog_short_name: string | null;
+  catalog_name: string | null;
+}
+
 /** Calculate and persist a score. Returns the fully hydrated row. */
 export function snapshotScore(
   db: Database.Database,
@@ -86,7 +92,7 @@ export function getLatestScore(
 export function getScoresForScope(
   db: Database.Database,
   scopeId: string | null = null,
-): ComplianceScore[] {
+): ComplianceScoreWithCatalog[] {
   const rows = db.prepare(`
     SELECT cs.*, cat.short_name AS catalog_short_name, cat.name AS catalog_name
     FROM compliance_scores cs
@@ -94,7 +100,11 @@ export function getScoresForScope(
     WHERE ${scopeId ? 'cs.scope_id = ?' : 'cs.scope_id IS NULL'}
     ORDER BY cat.short_name
   `).all(...(scopeId ? [scopeId] : [])) as any[];
-  return rows.map(hydrateScore);
+  return rows.map((r) => ({
+    ...hydrateScore(r),
+    catalog_short_name: r.catalog_short_name ?? null,
+    catalog_name: r.catalog_name ?? null,
+  }));
 }
 
 /**

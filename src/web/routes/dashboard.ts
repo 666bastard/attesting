@@ -50,8 +50,8 @@ export function dashboardRoutes(): Router {
     const poam = buildPoam(database);
     const frameworks = compliance.catalogs.map((c) => ({
       catalog_id: c.catalog_id,
-      catalog_short_name: (c as any).catalog_short_name ?? null,
-      catalog_name: (c as any).catalog_name ?? null,
+      catalog_short_name: c.catalog_short_name,
+      catalog_name: c.catalog_name,
       overall_score: c.overall_score,
       coverage_score: c.coverage_score,
       evidence_score: c.evidence_score,
