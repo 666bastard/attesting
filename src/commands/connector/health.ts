@@ -65,7 +65,7 @@ async function runConnectorHealth(id: string | undefined, options: ConnectorHeal
       }
     } catch (err: any) {
       database.prepare(
-        "UPDATE connectors SET health_status = 'error', updated_at = datetime('now') WHERE id = ?"
+        "UPDATE connectors SET health_status = 'unhealthy', updated_at = datetime('now') WHERE id = ?"
       ).run(conn.id);
 
       results.push({ id: conn.id, name: conn.name, status: 'error', error: err.message });
