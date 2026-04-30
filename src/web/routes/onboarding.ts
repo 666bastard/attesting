@@ -3,6 +3,7 @@ import { db } from '../../db/connection.js';
 import { getState, completeStage, skipStage, resetOnboarding, isOnboardingComplete } from '../../services/onboarding/state.js';
 import { getRecommendations } from '../../services/onboarding/recommendations.js';
 import { seedRisksFromGaps } from '../../services/onboarding/gap-seed.js';
+import { importBundledCatalogs, type BundleImportResult } from '../../services/onboarding/catalog-bundle.js';
 
 export function onboardingRoutes(): Router {
   const router = Router();
@@ -30,8 +31,14 @@ export function onboardingRoutes(): Router {
   router.post('/complete/:stage', (req, res) => {
     const d = db.getDb();
     const stage = parseInt(req.params.stage, 10);
+
+    let catalogImports: BundleImportResult[] | undefined;
+    if (stage === 2 && Array.isArray(req.body?.selected_catalogs)) {
+      catalogImports = importBundledCatalogs(d, req.body.selected_catalogs);
+    }
+
     completeStage(d, stage, req.body);
-    res.json(getState(d));
+    res.json({ ...getState(d), ...(catalogImports ? { catalog_imports: catalogImports } : {}) });
   });
 
   /** Skip a stage. */

@@ -47,6 +47,7 @@ export default function SetupWizard({ onComplete }: { onComplete: () => void }) 
     const s = await api(`/complete/${stage}`, { method: 'POST', body: JSON.stringify(data ?? {}) });
     setState(s);
     if (stage === 8) onComplete();
+    return s;
   };
 
   const skipStage = async (stage: number) => {
@@ -149,9 +150,11 @@ function OrgStep({ onComplete }: { onComplete: (d: any) => void }) {
   );
 }
 
-function FrameworkStep({ state, onComplete, onSkip }: { state: WizardState; onComplete: (d: any) => void; onSkip: () => void }) {
+function FrameworkStep({ state, onComplete, onSkip }: { state: WizardState; onComplete: (d: any) => Promise<any>; onSkip: () => void }) {
+  const { add: toast } = useToastContext();
   const [recs, setRecs] = useState<any[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     api('/recommendations?industry=technology&size=small').then(r => {
@@ -164,6 +167,26 @@ function FrameworkStep({ state, onComplete, onSkip }: { state: WizardState; onCo
     const next = new Set(selected);
     next.has(s) ? next.delete(s) : next.add(s);
     setSelected(next);
+  };
+
+  const handleContinue = async () => {
+    if (importing) return;
+    setImporting(true);
+    try {
+      const result = await onComplete({ selected_catalogs: [...selected] });
+      const imports = (result?.catalog_imports ?? []) as Array<{ shortName: string; status: string; controlCount?: number; message?: string }>;
+      const imported = imports.filter(r => r.status === 'imported');
+      const failed = imports.filter(r => r.status === 'error' || r.status === 'missing' || r.status === 'unknown');
+      if (imported.length > 0) {
+        const total = imported.reduce((sum, r) => sum + (r.controlCount ?? 0), 0);
+        toast(`Imported ${imported.length} framework${imported.length === 1 ? '' : 's'} (${total} controls)`, 'success');
+      }
+      for (const f of failed) {
+        toast(`${f.shortName}: ${f.message ?? f.status}`, 'error');
+      }
+    } finally {
+      setImporting(false);
+    }
   };
 
   return (
@@ -182,7 +205,7 @@ function FrameworkStep({ state, onComplete, onSkip }: { state: WizardState; onCo
         ))}
       </div>
       <div className="flex gap-3 mt-6">
-        <NextButton onClick={() => onComplete({ selected_catalogs: [...selected] })} />
+        <NextButton onClick={handleContinue} label={importing ? 'Importing…' : 'Continue'} />
         <SkipButton onSkip={onSkip} />
       </div>
     </div>

@@ -6,6 +6,7 @@ import { success, info, error } from '../../utils/logger.js';
 import { getState, completeStage, skipStage, isOnboardingComplete, STAGES } from '../../services/onboarding/state.js';
 import { getRecommendations, INDUSTRIES, ORG_SIZES } from '../../services/onboarding/recommendations.js';
 import { seedRisksFromGaps } from '../../services/onboarding/gap-seed.js';
+import { importBundledCatalogs } from '../../services/onboarding/catalog-bundle.js';
 import { input, select, confirm, multiSelect } from './prompts.js';
 
 export function registerSetup(program: Command): void {
@@ -97,6 +98,16 @@ async function runSetup(options: SetupOptions): Promise<void> {
         skipStage(database, 2);
       }
     } else {
+      const results = importBundledCatalogs(database, selected);
+      for (const r of results) {
+        if (r.status === 'imported') {
+          success(`  Imported ${r.shortName}: ${r.controlCount} controls.`);
+        } else if (r.status === 'skipped') {
+          info(`  ${r.shortName} already imported — skipping.`);
+        } else {
+          error(`  ${r.shortName}: ${r.message ?? r.status}`);
+        }
+      }
       completeStage(database, 2, { selected_catalogs: selected });
       success(`${selected.length} framework(s) selected.\n`);
     }

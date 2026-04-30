@@ -1,19 +1,13 @@
 import { Command } from 'commander';
+import * as fs from 'fs';
 import * as path from 'path';
 import { db } from '../../db/connection.js';
 import { generateUuid } from '../../utils/uuid.js';
 import { now } from '../../utils/dates.js';
 import { info, success, error, warn } from '../../utils/logger.js';
-import {
-  importCsvCatalog,
-  type ColumnMapping,
-} from '../../importers/csv-generic.js';
-import {
-  importSigCatalog,
-} from '../../importers/sig-content-library.js';
-import {
-  importOscalCatalog,
-} from '../../importers/oscal-catalog.js';
+import { importCsvCatalog, type ColumnMapping } from '../../importers/csv-generic.js';
+import { importSigCatalog } from '../../importers/sig-content-library.js';
+import { importOscalCatalog } from '../../importers/oscal-catalog.js';
 import type { Catalog } from '../../models/catalog.js';
 
 /**
@@ -23,48 +17,106 @@ export function registerCatalogImport(catalogCommand: Command): void {
   catalogCommand
     .command('import')
     .description('Import a control catalog from a file')
-    .requiredOption('--format <format>', 'Import format: csv | sig | oscal')
     .requiredOption('--file <file>', 'Path to the source file')
-    .requiredOption('--name <name>', 'Catalog display name')
-    .requiredOption('--short-name <shortName>', 'Unique short identifier (e.g. iso-27001-2022)')
+    .option('--format <format>', 'Import format: csv | sig | oscal (auto-detected from extension)')
+    .option('--name <name>', 'Catalog display name (auto-detected from OSCAL metadata)')
+    .option('--short-name <shortName>', 'Unique short identifier (default: filename without extension)')
     .option('--columns <mapping>', 'Column mapping for CSV: "control_id=A,title=B,description=C"')
-    .option('--publisher <publisher>', 'Publisher name (e.g. NIST, ISO)')
-    .option('--version <version>', 'Catalog version string')
+    .option('--publisher <publisher>', 'Publisher name (auto-detected from OSCAL metadata.props)')
+    .option('--catalog-version <version>', 'Catalog version string')
     .option('--scope-level <level>', 'SIG scope level filter: Lite | Core | Detail')
     .option('--json', 'Output as JSON')
     .action(runCatalogImport);
 }
 
 interface CatalogImportOptions {
-  format: string;
+  format?: string;
   file: string;
-  name: string;
-  shortName: string;
+  name?: string;
+  shortName?: string;
   columns?: string;
   publisher?: string;
-  version?: string;
+  catalogVersion?: string;
   scopeLevel?: string;
   json?: boolean;
 }
 
-async function runCatalogImport(options: CatalogImportOptions): Promise<void> {
-  const supportedFormats = ['csv', 'sig', 'oscal'];
-  if (!supportedFormats.includes(options.format)) {
-    error(`Unsupported format "${options.format}". Supported: ${supportedFormats.join(', ')}`);
+interface OscalMetaProp { name: string; value: string }
+interface OscalDocLite { catalog?: { metadata?: { title?: string; props?: OscalMetaProp[] } } }
+
+const SUPPORTED_FORMATS = ['csv', 'sig', 'oscal'] as const;
+
+interface ResolvedOptions {
+  format: string;
+  name: string;
+  shortName: string;
+  publisher: string | null;
+}
+
+/**
+ * Auto-detect format/name/shortName/publisher from the file extension and,
+ * for OSCAL JSON, from `catalog.metadata`. Falls back to whatever the user
+ * passed explicitly. Exits the process on unrecoverable detection errors.
+ */
+function resolveOptions(options: CatalogImportOptions, filePath: string): ResolvedOptions {
+  const ext = path.extname(filePath).toLowerCase();
+  let format = options.format?.toLowerCase();
+  let oscalDoc: OscalDocLite | null = null;
+
+  if (ext === '.json') {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as OscalDocLite;
+      if (parsed?.catalog?.metadata) {
+        oscalDoc = parsed;
+        format ??= 'oscal';
+      }
+    } catch (err) {
+      if (!format) {
+        error(`Could not parse JSON file: ${(err as Error).message}`);
+        process.exit(1);
+      }
+    }
+  } else if (ext === '.csv' && !format) {
+    format = 'csv';
+  }
+
+  if (!format) {
+    error(`Could not detect format from "${path.basename(filePath)}". Pass --format explicitly.`);
+    process.exit(1);
+  }
+  if (!(SUPPORTED_FORMATS as readonly string[]).includes(format)) {
+    error(`Unsupported format "${format}". Supported: ${SUPPORTED_FORMATS.join(', ')}`);
     process.exit(1);
   }
 
-  const database = db.getDb();
+  const shortName = options.shortName ?? path.basename(filePath, path.extname(filePath)).toLowerCase();
+  const name = options.name ?? oscalDoc?.catalog?.metadata?.title ?? shortName;
+  const publisher = options.publisher
+    ?? oscalDoc?.catalog?.metadata?.props?.find((p) => p.name === 'publisher')?.value
+    ?? null;
+
+  return { format, name, shortName, publisher };
+}
+
+async function runCatalogImport(options: CatalogImportOptions): Promise<void> {
   const filePath = path.resolve(options.file);
+
+  if (!fs.existsSync(filePath)) {
+    error(`File not found: ${filePath}`);
+    process.exit(1);
+  }
+
+  const resolved = resolveOptions(options, filePath);
+  const database = db.getDb();
 
   // Check for duplicate short_name
   const existing = database
     .prepare('SELECT id, name FROM catalogs WHERE short_name = ?')
-    .get(options.shortName) as Pick<Catalog, 'id' | 'name'> | undefined;
+    .get(resolved.shortName) as Pick<Catalog, 'id' | 'name'> | undefined;
 
   if (existing) {
     error(
-      `A catalog with short-name "${options.shortName}" already exists: "${existing.name}". ` +
+      `A catalog with short-name "${resolved.shortName}" already exists: "${existing.name}". ` +
         'Use a unique --short-name.'
     );
     process.exit(1);
@@ -73,8 +125,7 @@ async function runCatalogImport(options: CatalogImportOptions): Promise<void> {
   // Create the catalog record
   const catalogId = generateUuid();
   const timestamp = now();
-
-  const sourceFormat = options.format === 'sig' ? 'sig-xlsm' : options.format;
+  const sourceFormat = resolved.format === 'sig' ? 'sig-xlsm' : resolved.format;
 
   database
     .prepare(
@@ -83,24 +134,24 @@ async function runCatalogImport(options: CatalogImportOptions): Promise<void> {
     )
     .run(
       catalogId,
-      options.name,
-      options.shortName,
-      options.version ?? null,
+      resolved.name,
+      resolved.shortName,
+      options.catalogVersion ?? null,
       sourceFormat,
-      options.publisher ?? null,
+      resolved.publisher,
       timestamp,
       timestamp
     );
 
-  info(`Importing catalog: ${options.name} (${options.shortName})`);
+  info(`Importing catalog: ${resolved.name} (${resolved.shortName})`);
   info(`Source file: ${filePath}`);
 
-  if (options.format === 'csv') {
-    runCsvImport(options, catalogId, filePath, database);
-  } else if (options.format === 'sig') {
-    await runSigImport(options, catalogId, filePath, database);
-  } else if (options.format === 'oscal') {
-    runOscalImport(options, catalogId, filePath, database);
+  if (resolved.format === 'csv') {
+    runCsvImport(options, resolved, catalogId, filePath, database);
+  } else if (resolved.format === 'sig') {
+    await runSigImport(options, resolved, catalogId, filePath, database);
+  } else if (resolved.format === 'oscal') {
+    runOscalImport(options, resolved, catalogId, filePath, database);
   }
 }
 
@@ -121,6 +172,7 @@ function parseColumnMapping(raw: string): ColumnMapping {
 
 function runCsvImport(
   options: CatalogImportOptions,
+  resolved: ResolvedOptions,
   catalogId: string,
   filePath: string,
   database: import('better-sqlite3').Database
@@ -143,7 +195,7 @@ function runCsvImport(
     .run(result.imported, now(), catalogId);
 
   if (options.json) {
-    console.log(JSON.stringify({ catalog: options.shortName, imported: result.imported, errors: result.errors }, null, 2));
+    console.log(JSON.stringify({ catalog: resolved.shortName, imported: result.imported, errors: result.errors }, null, 2));
     return;
   }
 
@@ -153,7 +205,7 @@ function runCsvImport(
     }
   }
 
-  success(`Import complete: ${result.imported} controls imported into "${options.name}"`);
+  success(`Import complete: ${result.imported} controls imported into "${resolved.name}"`);
 
   if (result.errors.length > 0) {
     warn(`${result.errors.length} row(s) had errors and were skipped.`);
@@ -162,6 +214,7 @@ function runCsvImport(
 
 async function runSigImport(
   options: CatalogImportOptions,
+  resolved: ResolvedOptions,
   catalogId: string,
   filePath: string,
   database: import('better-sqlite3').Database
@@ -183,7 +236,7 @@ async function runSigImport(
 
   if (options.json) {
     console.log(JSON.stringify({
-      catalog: options.shortName,
+      catalog: resolved.shortName,
       imported: result.imported,
       framework_columns: result.frameworkColumns,
       mappings_extracted: result.mappingsExtracted,
@@ -198,7 +251,7 @@ async function runSigImport(
     }
   }
 
-  success(`Import complete: ${result.imported} controls imported into "${options.name}"`);
+  success(`Import complete: ${result.imported} controls imported into "${resolved.name}"`);
 
   if (result.frameworkColumns.length > 0) {
     info(`Mapping reference columns found (${result.frameworkColumns.length}): ${result.frameworkColumns.join(', ')}`);
@@ -212,6 +265,7 @@ async function runSigImport(
 
 function runOscalImport(
   options: CatalogImportOptions,
+  resolved: ResolvedOptions,
   catalogId: string,
   filePath: string,
   database: import('better-sqlite3').Database
@@ -223,7 +277,7 @@ function runOscalImport(
     .run(result.imported, now(), catalogId);
 
   if (options.json) {
-    console.log(JSON.stringify({ catalog: options.shortName, imported: result.imported, errors: result.errors }, null, 2));
+    console.log(JSON.stringify({ catalog: resolved.shortName, imported: result.imported, errors: result.errors }, null, 2));
     return;
   }
 
@@ -233,7 +287,7 @@ function runOscalImport(
     }
   }
 
-  success(`Import complete: ${result.imported} controls imported into "${options.name}"`);
+  success(`Import complete: ${result.imported} controls imported into "${resolved.name}"`);
 
   if (result.errors.length > 0) {
     warn(`${result.errors.length} row(s) had errors and were skipped.`);

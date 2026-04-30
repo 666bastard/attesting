@@ -99,12 +99,16 @@ export interface ImportResult {
  * @param filePath      Absolute path to the CSV file.
  * @param catalogId     UUID of the target catalog record.
  * @param columnMapping Maps field names to column letters (A=0, B=1, …).
+ * @param options       Optional flags. `skipHeader` (default true) drops the
+ *                      first row before importing. Bundled catalogs without
+ *                      header rows pass `skipHeader: false`.
  * @returns             Count of successfully imported controls and any errors.
  */
 export function importCsvCatalog(
   filePath: string,
   catalogId: string,
-  columnMapping: ColumnMapping
+  columnMapping: ColumnMapping,
+  options?: { skipHeader?: boolean }
 ): ImportResult {
   const content = fs.readFileSync(filePath, 'utf-8');
   const rows = parseCsv(content);
@@ -113,8 +117,8 @@ export function importCsvCatalog(
     return { imported: 0, errors: ['CSV file is empty'] };
   }
 
-  // First row is headers — skip it
-  const dataRows = rows.slice(1);
+  const skipHeader = options?.skipHeader ?? true;
+  const dataRows = skipHeader ? rows.slice(1) : rows;
 
   const database = db.getDb();
 
@@ -139,10 +143,11 @@ export function importCsvCatalog(
         return row[idx]?.trim() ?? null;
       };
 
+      const fileRow = rowIndex + (skipHeader ? 2 : 1);
       const controlId = get(columnMapping.control_id);
       if (!controlId) {
         errors.push(
-          `Row ${rowIndex + 2}: missing control_id (column ${columnMapping.control_id})`
+          `Row ${fileRow}: missing control_id (column ${columnMapping.control_id})`
         );
         return;
       }
@@ -173,7 +178,7 @@ export function importCsvCatalog(
         imported++;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        errors.push(`Row ${rowIndex + 2} (${controlId}): ${msg}`);
+        errors.push(`Row ${fileRow} (${controlId}): ${msg}`);
       }
     });
   });
