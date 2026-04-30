@@ -4,12 +4,14 @@ services:
   attesting:
     build: .
     ports:
-      - "3000:3000"
+      - "${ATTESTING_PORT:-3000}:${ATTESTING_PORT:-3000}"
     volumes:
       - attesting-data:/root/.attesting
+      - ./config:/app/config:ro
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
-      - ATTESTING_PORT=3000
     restart: unless-stopped
 
 volumes:
