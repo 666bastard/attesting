@@ -29,7 +29,7 @@ export function registerCatalogImport(catalogCommand: Command): void {
     .requiredOption('--short-name <shortName>', 'Unique short identifier (e.g. iso-27001-2022)')
     .option('--columns <mapping>', 'Column mapping for CSV: "control_id=A,title=B,description=C"')
     .option('--publisher <publisher>', 'Publisher name (e.g. NIST, ISO)')
-    .option('--version <version>', 'Catalog version string')
+    .option('--catalog-version <version>', 'Catalog version string')
     .option('--scope-level <level>', 'SIG scope level filter: Lite | Core | Detail')
     .option('--json', 'Output as JSON')
     .action(runCatalogImport);
@@ -42,7 +42,7 @@ interface CatalogImportOptions {
   shortName: string;
   columns?: string;
   publisher?: string;
-  version?: string;
+  catalogVersion?: string;
   scopeLevel?: string;
   json?: boolean;
 }
@@ -85,7 +85,7 @@ async function runCatalogImport(options: CatalogImportOptions): Promise<void> {
       catalogId,
       options.name,
       options.shortName,
-      options.version ?? null,
+      options.catalogVersion ?? null,
       sourceFormat,
       options.publisher ?? null,
       timestamp,
