@@ -67,13 +67,6 @@ When implementing new features, look at existing code first:
 - `dispositions.drift_alert_id` → `drift_alerts.id`
 - `threat_asset_correlations` links threats ↔ assets by platform
 
-## What's TODO
-
-- CLI commands for: risk, intel, drift, connector modules
-- React pages for: assets, intel, drift, connectors
-- Tests for all v2 services (propagation, disposition, drift, intel, connectors)
-- Connector adapters: CrowdStrike, ServiceNow, Splunk, Okta, cloud providers, SBOM (CycloneDX/SPDX)
-
 ## Verification
 
 After any code change: run `npm run build` to typecheck, then run relevant tests with `npx vitest run <path>`. Don't run the full suite unless asked.
