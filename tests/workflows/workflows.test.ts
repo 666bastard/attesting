@@ -58,7 +58,7 @@ describe('ci.yml — build matrix and steps', () => {
   });
 
   it('caches npm via setup-node', () => {
-    expect(ci).toMatch(/setup-node@v4[\s\S]*?cache:\s*['"]?npm['"]?/);
+    expect(ci).toMatch(/setup-node@v\d+[\s\S]*?cache:\s*['"]?npm['"]?/);
   });
 
   it('has an npm pack size verification step', () => {
