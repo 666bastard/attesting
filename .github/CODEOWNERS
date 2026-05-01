@@ -1,12 +1,12 @@
 # Default owner for everything
-* @xtonyknucklesx
+* @xtonyknucklesx @666bastard
 
 # Critical paths — require review for any changes
-src/db/                        @xtonyknucklesx
-src/db/schema.sql              @xtonyknucklesx
-src/db/migrations/             @xtonyknucklesx
-src/services/propagation/      @xtonyknucklesx
-src/services/import/           @xtonyknucklesx
-src/web/server.ts              @xtonyknucklesx
-.github/                       @xtonyknucklesx
-SECURITY.md                    @xtonyknucklesx
+src/db/                        @xtonyknucklesx @666bastard
+src/db/schema.sql              @xtonyknucklesx @666bastard
+src/db/migrations/             @xtonyknucklesx @666bastard
+src/services/propagation/      @xtonyknucklesx @666bastard
+src/services/import/           @xtonyknucklesx @666bastard
+src/web/server.ts              @xtonyknucklesx @666bastard
+.github/                       @xtonyknucklesx @666bastard
+SECURITY.md                    @xtonyknucklesx @666bastard
