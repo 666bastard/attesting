@@ -35,10 +35,8 @@ npm install -g attesting      # requires Node 20+
 attesting org init --name "Acme Corp"
 attesting scope create --name "Production" --type product
 
-# Import a bundled framework
-attesting catalog import --format oscal \
-  --file data/catalogs/nist-800-53-r5.json \
-  --name "NIST SP 800-53 Rev 5" --short-name nist-800-53-r5
+# Import a bundled framework — format, name, short-name auto-detected
+attesting catalog import --file data/catalogs/nist-800-53-r5.json
 
 # Check coverage
 attesting score show --catalog nist-800-53-r5 --scope Production
